@@ -8,15 +8,15 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:        #09090d;
-    --surface:   #111118;
-    --surface2:  #18181f;
-    --surface3:  #1e1e28;
-    --border:    rgba(255,255,255,0.07);
-    --border2:   rgba(255,255,255,0.04);
-    --text:      #ededf2;
+    --bg:        #0e0e18;
+    --surface:   #151523;
+    --surface2:  #1c1c2c;
+    --surface3:  #232336;
+    --border:    rgba(255,255,255,0.09);
+    --border2:   rgba(255,255,255,0.05);
+    --text:      #e8e8f0;
     --muted:     #7878a0;
-    --dim:       #44445a;
+    --dim:       #4a4a66;
     --blue:      #115ed2;
     --blue-h:    #1a6fe8;
     --blue-dim:  rgba(17,94,210,0.13);
@@ -28,21 +28,21 @@
 
   /* ── Light mode ────────────────────────────────────────── */
   body.light {
-    --bg:        #f4f4f8;
-    --surface:   #ffffff;
-    --surface2:  #ededf4;
-    --surface3:  #e4e4ee;
-    --border:    rgba(0,0,0,0.08);
-    --border2:   rgba(0,0,0,0.05);
-    --text:      #16162a;
+    --bg:        #e9e9f2;
+    --surface:   #f3f3fa;
+    --surface2:  #e2e2ec;
+    --surface3:  #d8d8e5;
+    --border:    rgba(0,0,0,0.10);
+    --border2:   rgba(0,0,0,0.06);
+    --text:      #1c1c32;
     --muted:     #52527a;
-    --dim:       #9898b8;
+    --dim:       #8888a8;
     --blue:      #115ed2;
     --blue-h:    #1a6fe8;
     --blue-dim:  rgba(17,94,210,0.10);
     --blue-glow: rgba(17,94,210,0.20);
     --rose:      #e03050;
-    --logo-filter: brightness(0) opacity(0.85);
+    --logo-filter: brightness(0) opacity(0.80);
   }
 
   body {
@@ -334,15 +334,20 @@
   #input-wrap {
     flex-shrink: 0;
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.16);
     border-radius: 12px;
     padding: 4px 4px 4px 16px;
     display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.35);
     transition: border-color .2s, box-shadow .2s;
   }
+  body.light #input-wrap {
+    border-color: rgba(0,0,0,0.20);
+    box-shadow: 0 2px 14px rgba(0,0,0,0.12);
+  }
   #input-wrap:focus-within {
-    border-color: rgba(17,94,210,.55);
-    box-shadow: 0 0 0 3px var(--blue-dim);
+    border-color: rgba(17,94,210,.65);
+    box-shadow: 0 0 0 3px var(--blue-dim), 0 4px 24px rgba(0,0,0,0.3);
   }
   .input-label {
     font-size: 11px; font-weight: 600; color: var(--dim);
@@ -400,8 +405,6 @@
         <span class="x">×</span>
         <img src="https://safirepartners.com/wp-content/themes/safirepartners/images/logo.png" alt="Safire" onerror="this.style.display='none'">
       </div>
-      <div class="hdr-sep"></div>
-      <span class="hdr-title">Company Search</span>
     </div>
     <div class="hdr-right">
       <span id="stats" class="stat-pill">Loading…</span>
