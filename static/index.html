@@ -54,7 +54,9 @@
     box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 32px 64px rgba(0,0,0,0.6);
   }
   .login-logos { display: flex; align-items: center; gap: 14px; }
-  .login-logos img { height: 28px; filter: brightness(0) invert(1); opacity: .9; }
+  .login-logos img { filter: brightness(0) invert(1); opacity: .9; }
+  .login-logos .logo-uv     { height: 24px; }
+  .login-logos .logo-safire { height: 36px; }
   .login-logos .x { color: var(--dim); font-size: 16px; font-weight: 300; }
   .login-heading { text-align: center; }
   .login-heading h1 { font-size: 21px; font-weight: 700; letter-spacing: -.025em; margin-bottom: 6px; }
@@ -97,7 +99,9 @@
   }
   .hdr-left  { display: flex; align-items: center; gap: 14px; }
   .hdr-logos { display: flex; align-items: center; gap: 10px; }
-  .hdr-logos img { height: 22px; filter: brightness(0) invert(1); opacity: .82; }
+  .hdr-logos img { filter: brightness(0) invert(1); opacity: .82; }
+  .hdr-logos .logo-uv     { height: 18px; }
+  .hdr-logos .logo-safire { height: 28px; }
   .hdr-logos .x  { color: var(--dim); font-size: 13px; font-weight: 300; }
   .hdr-sep   { width: 1px; height: 16px; background: var(--border); }
   .hdr-title { font-size: 11.5px; font-weight: 600; color: var(--dim); letter-spacing: .07em; text-transform: uppercase; }
@@ -338,9 +342,9 @@
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logos">
-      <img src="https://www.unmatched.ventures/assets/images/original/brand/unmatched-ventures-logo-white-2Kt_lkZ.svg" alt="UV" onerror="this.style.display='none'">
+      <img class="logo-uv" src="https://www.unmatched.ventures/assets/images/original/brand/unmatched-ventures-logo-white-2Kt_lkZ.svg" alt="UV" onerror="this.style.display='none'">
       <span class="x">×</span>
-      <img src="https://safirepartners.com/wp-content/themes/safirepartners/images/logo.png" alt="Safire" onerror="this.style.display='none'">
+      <img class="logo-safire" src="https://safirepartners.com/wp-content/themes/safirepartners/images/logo.png" alt="Safire" onerror="this.style.display='none'">
     </div>
     <div class="login-heading">
       <h1>Company Search</h1>
