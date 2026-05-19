@@ -280,7 +280,21 @@
   tr:hover td { background: rgba(17,94,210,.055) !important; }
   tr:last-child td { border-bottom: none; }
   td.company-name { font-weight: 600; white-space: nowrap; }
-  td.description  { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  td.description  { font-size: 12px; color: var(--muted); line-height: 1.55; cursor: pointer; min-width: 200px; max-width: 320px; }
+  .desc-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .desc-text.expanded {
+    display: block;
+    -webkit-line-clamp: unset;
+  }
+  .desc-toggle {
+    font-size: 10.5px; color: var(--blue); margin-top: 3px;
+    display: inline-block; user-select: none;
+  }
   td a            { color: #6699ee; text-decoration: none; font-size: 12.5px; }
   td a:hover      { color: #88aaff; text-decoration: underline; }
   .tag {
@@ -787,7 +801,21 @@
           td.textContent = val;
         } else if (cl === 'description') {
           td.className = 'description';
-          td.textContent = val;
+          if (val) {
+            const span = document.createElement('span');
+            span.className = 'desc-text';
+            span.textContent = val;
+            const toggle = document.createElement('span');
+            toggle.className = 'desc-toggle';
+            toggle.textContent = 'Show more';
+            td.appendChild(span);
+            td.appendChild(document.createElement('br'));
+            td.appendChild(toggle);
+            td.onclick = () => {
+              const expanded = span.classList.toggle('expanded');
+              toggle.textContent = expanded ? 'Show less' : 'Show more';
+            };
+          }
         } else if (cl === 'website' && val) {
           const a = document.createElement('a');
           a.href = val.startsWith('http') ? val : 'https://' + val;
