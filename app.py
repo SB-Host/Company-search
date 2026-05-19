@@ -1,12 +1,16 @@
-import json
+import hashlib
+import hmac
 import os
 import re
 import sqlite3
+import threading
+from collections import deque
+from datetime import datetime, timezone
 from pathlib import Path
 
 import anthropic
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -22,13 +26,12 @@ DISPLAY_COLUMNS = [
     "employees", "website", "linkedin", "description", "notes"
 ]
 
-# ── Database setup ─────────────────────────────────────────────────────────────
+# ── Database setup ──────────────────────────────────────────────────────────────
 
 def load_db():
     if not Path(CSV_PATH).exists():
         raise FileNotFoundError(f"{CSV_PATH} not found")
     df = pd.read_csv(CSV_PATH, dtype=str).fillna("")
-    # Clean column names for SQL
     seen = {}
     new_cols = []
     for col in df.columns:
@@ -59,11 +62,43 @@ def get_schema():
     conn.close()
     return cols, count
 
-# Load on startup
 db_columns = load_db()
 schema_cols, total_count = get_schema()
 
-# ── Claude SQL generation ──────────────────────────────────────────────────────
+# ── In-memory search history (shared across all users) ──────────────────────────
+
+_history: deque = deque(maxlen=50)
+_history_lock = threading.Lock()
+_history_counter = 0
+
+def save_search(query: str, result_count: int):
+    global _history_counter
+    with _history_lock:
+        _history_counter += 1
+        _history.appendleft({
+            "id": _history_counter,
+            "query": query,
+            "result_count": result_count,
+            "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        })
+
+def get_recent_searches():
+    with _history_lock:
+        return list(_history)
+
+# ── Auth ────────────────────────────────────────────────────────────────────────
+
+def _session_token() -> str:
+    password = os.environ.get("APP_PASSWORD", "changeme")
+    return hashlib.sha256(f"{password}:uv-session-v1".encode()).hexdigest()
+
+async def require_auth(request: Request):
+    token = request.cookies.get("uv_session")
+    expected = _session_token()
+    if not (token and hmac.compare_digest(token, expected)):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+# ── Claude SQL generation ───────────────────────────────────────────────────────
 
 SYSTEM_PROMPT = """You are a SQL expert helping search a database of companies.
 
@@ -74,15 +109,14 @@ Rules:
 - Return ONLY the SQL query, no explanation, no markdown.
 - Use LIKE '%value%' for text searches (case-insensitive with LOWER()).
 - For employee counts, the Employees column contains numbers as text — cast with CAST(Employees AS INTEGER).
-- For revenue/funding queries use the relevant numeric columns.
 - Always add LIMIT 500 unless the user asks for more.
 - For follow-up queries that refine previous results, combine the conditions with AND.
 - Common column mappings:
-  - "industry" or "sector" or "type" → Category column
-  - "location" or "headquarters" or "based in" → City and/or State columns
-  - "headcount" or "size" or "staff" → Employees column
+  - "industry" or "sector" or "type" → category column
+  - "location" or "headquarters" or "based in" → city and/or state columns
+  - "headcount" or "size" or "staff" → employees column
   - "founded" → year__nfounded column
-  - "description" or "what they do" → Description column"""
+  - "description" or "what they do" → description column"""
 
 def generate_sql(query: str, history: list) -> str:
     api_key = os.environ.get("ANTHROPIC_API_KEY")
@@ -93,7 +127,7 @@ def generate_sql(query: str, history: list) -> str:
     system = SYSTEM_PROMPT.format(schema=schema_str)
 
     messages = []
-    for h in history[-6:]:  # keep last 3 exchanges for context
+    for h in history[-6:]:
         messages.append({"role": "user", "content": h["query"]})
         messages.append({"role": "assistant", "content": h["sql"]})
     messages.append({"role": "user", "content": query})
@@ -109,14 +143,41 @@ def generate_sql(query: str, history: list) -> str:
     sql = re.sub(r"^```(?:sql)?\s*|\s*```$", "", sql, flags=re.MULTILINE).strip()
     return sql
 
-# ── API routes ─────────────────────────────────────────────────────────────────
+# ── API routes ──────────────────────────────────────────────────────────────────
+
+class LoginRequest(BaseModel):
+    password: str
 
 class QueryRequest(BaseModel):
     query: str
     history: list = []
 
+@app.post("/api/login")
+async def login(req: LoginRequest, response: Response):
+    expected = os.environ.get("APP_PASSWORD", "changeme")
+    if not hmac.compare_digest(req.password, expected):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    response.set_cookie(
+        "uv_session", _session_token(),
+        httponly=True, samesite="lax", max_age=86400 * 30
+    )
+    return {"ok": True}
+
+@app.post("/api/logout")
+async def logout(response: Response):
+    response.delete_cookie("uv_session")
+    return {"ok": True}
+
+@app.get("/api/stats")
+async def stats():
+    return {"total": total_count}
+
+@app.get("/api/history")
+async def history(_: None = Depends(require_auth)):
+    return get_recent_searches()
+
 @app.post("/api/query")
-async def query(req: QueryRequest):
+async def query(req: QueryRequest, _: None = Depends(require_auth)):
     try:
         sql = generate_sql(req.query, req.history)
     except Exception as e:
@@ -131,20 +192,17 @@ async def query(req: QueryRequest):
     except Exception as e:
         raise HTTPException(400, f"SQL error: {e} | Generated SQL: {sql}")
 
+    save_search(req.query, len(rows))
     return {"sql": sql, "columns": columns, "rows": rows, "count": len(rows)}
 
-@app.get("/api/stats")
-async def stats():
-    return {"total": total_count}
-
 @app.get("/api/reload")
-async def reload_db():
+async def reload_db(_: None = Depends(require_auth)):
     global db_columns, schema_cols, total_count
     db_columns = load_db()
     schema_cols, total_count = get_schema()
     return {"total": total_count}
 
-# ── Frontend ───────────────────────────────────────────────────────────────────
+# ── Frontend ────────────────────────────────────────────────────────────────────
 
 @app.get("/", response_class=HTMLResponse)
 async def root():

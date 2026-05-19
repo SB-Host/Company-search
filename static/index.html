@@ -3,25 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Company Search — Unmatched Ventures</title>
+<title>Company Search — Unmatched Ventures × Safire Partners</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:         #0b0b0e;
-    --surface:    #13131a;
-    --surface2:   #1a1a24;
-    --border:     rgba(255,255,255,0.08);
-    --border2:    rgba(255,255,255,0.05);
-    --text:       #f0f0f4;
-    --text-muted: #7a7a90;
-    --text-dim:   #4a4a60;
-    --accent:     #ffffff;
-    --accent-bg:  rgba(255,255,255,0.06);
-    --tag-bg:     rgba(255,255,255,0.07);
-    --tag-text:   #b0b0c8;
-    --link:       #8888cc;
-    --hover-row:  rgba(255,255,255,0.03);
+    --bg:          #0b0b0e;
+    --surface:     #13131a;
+    --surface2:    #1a1a24;
+    --border:      rgba(255,255,255,0.08);
+    --border2:     rgba(255,255,255,0.05);
+    --text:        #f0f0f4;
+    --text-muted:  #7a7a90;
+    --text-dim:    #4a4a60;
+    --blue:        #115ed2;
+    --blue-hover:  #1a6fe8;
+    --blue-dim:    rgba(17,94,210,0.15);
+    --tag-bg:      rgba(17,94,210,0.12);
+    --tag-text:    #6699ee;
+    --link:        #6699ee;
+    --hover-row:   rgba(255,255,255,0.025);
+    --sidebar-w:   260px;
   }
 
   body {
@@ -31,14 +33,135 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
 
-  /* ── Header ─────────────────────────────────────────────── */
+  /* ── Login overlay ───────────────────────────────────────────── */
+  #login-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  #login-screen.hidden { display: none; }
+
+  .login-box {
+    width: 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .login-logos {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .login-logos img {
+    height: 32px;
+    width: auto;
+    filter: brightness(0) invert(1);
+  }
+
+  .login-logos .times {
+    color: var(--text-dim);
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1;
+  }
+
+  .login-title {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .login-title h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .login-title p {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .login-form input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .login-form input:focus { border-color: var(--blue); }
+  .login-form input::placeholder { color: var(--text-dim); }
+
+  .login-form button {
+    width: 100%;
+    padding: 12px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s;
+    letter-spacing: 0.01em;
+  }
+
+  .login-form button:hover { background: var(--blue-hover); }
+  .login-form button:disabled { opacity: 0.5; cursor: default; }
+
+  #login-error {
+    font-size: 13px;
+    color: #e05555;
+    text-align: center;
+    min-height: 18px;
+  }
+
+  .login-footer {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  /* ── Main app ────────────────────────────────────────────────── */
+  #app { display: flex; flex-direction: column; height: 100vh; }
+  #app.hidden { display: none; }
+
+  /* ── Header ──────────────────────────────────────────────────── */
   header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
-    padding: 0 28px;
-    height: 56px;
+    padding: 0 20px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -48,46 +171,168 @@
   .header-left {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 14px;
   }
 
-  .logo {
-    height: 28px;
+  .header-logos {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .header-logos img {
+    height: 24px;
     width: auto;
-    display: block;
+    filter: brightness(0) invert(1);
+  }
+
+  .header-logos .times {
+    color: var(--text-dim);
+    font-size: 14px;
+    font-weight: 300;
   }
 
   .header-divider {
     width: 1px;
-    height: 20px;
+    height: 18px;
     background: var(--border);
   }
 
   .header-title {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--text-muted);
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
   }
 
   #stats {
     font-size: 12px;
     color: var(--text-dim);
-    letter-spacing: 0.02em;
   }
 
-  /* ── Main layout ─────────────────────────────────────────── */
-  main {
+  #logout-btn {
+    padding: 5px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  #logout-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+  /* ── Body layout ─────────────────────────────────────────────── */
+  .body-wrap {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── Sidebar ─────────────────────────────────────────────────── */
+  #sidebar {
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .sidebar-header {
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border2);
+    flex-shrink: 0;
+  }
+
+  .sidebar-header h2 {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  #history-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 0;
+  }
+
+  #history-list::-webkit-scrollbar { width: 4px; }
+  #history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+  .history-empty {
+    padding: 24px 16px;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .history-item {
+    padding: 9px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border2);
+    transition: background 0.1s;
+  }
+
+  .history-item:hover { background: rgba(255,255,255,0.03); }
+  .history-item:last-child { border-bottom: none; }
+
+  .history-query {
+    font-size: 12.5px;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .history-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .history-time {
+    font-size: 10.5px;
+    color: var(--text-dim);
+  }
+
+  .history-count {
+    font-size: 10.5px;
+    background: var(--blue-dim);
+    color: var(--blue);
+    border-radius: 10px;
+    padding: 1px 7px;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  /* ── Main content ────────────────────────────────────────────── */
+  #main-content {
     display: flex;
     flex-direction: column;
     flex: 1;
     overflow: hidden;
-    padding: 16px 20px;
-    gap: 12px;
+    padding: 14px 16px;
+    gap: 10px;
   }
 
-  /* ── Results area ────────────────────────────────────────── */
+  /* ── Results area ────────────────────────────────────────────── */
   #results-area {
     flex: 1;
     overflow: hidden;
@@ -99,7 +344,7 @@
   }
 
   #results-header {
-    padding: 11px 16px;
+    padding: 10px 16px;
     border-bottom: 1px solid var(--border2);
     display: flex;
     align-items: center;
@@ -108,23 +353,34 @@
   }
 
   #results-header h2 {
-    font-size: 12px;
+    font-size: 10.5px;
     font-weight: 600;
-    color: var(--text-muted);
-    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
-  #result-count {
-    font-size: 12px;
-    color: var(--text-dim);
+  #result-count { font-size: 12px; color: var(--text-dim); }
+
+  #export-btn {
+    padding: 4px 11px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: none;
+    font-family: inherit;
+    transition: border-color 0.15s, color 0.15s;
   }
+  #export-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
 
   #sql-display {
-    padding: 7px 16px;
+    padding: 6px 16px;
     background: var(--surface2);
     border-bottom: 1px solid var(--border2);
-    font-size: 11px;
+    font-size: 10.5px;
     font-family: 'SF Mono', 'Fira Code', Monaco, monospace;
     color: var(--text-dim);
     white-space: nowrap;
@@ -132,7 +388,6 @@
     text-overflow: ellipsis;
     flex-shrink: 0;
     display: none;
-    letter-spacing: 0.01em;
   }
 
   #table-wrap {
@@ -140,17 +395,10 @@
     flex: 1;
   }
 
-  /* Scrollbar */
   #table-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
-  #table-wrap::-webkit-scrollbar-track { background: transparent; }
-  #table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-  #table-wrap::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+  #table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
 
   thead {
     position: sticky;
@@ -160,16 +408,16 @@
   }
 
   th {
-    padding: 9px 14px;
+    padding: 8px 14px;
     text-align: left;
     font-weight: 600;
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--text-muted);
     border-bottom: 1px solid var(--border);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
@@ -178,37 +426,33 @@
   th.sort-desc::after { content: ' ↓'; color: var(--text-dim); }
 
   td {
-    padding: 9px 14px;
+    padding: 8px 14px;
     border-bottom: 1px solid var(--border2);
     vertical-align: top;
-    max-width: 300px;
+    max-width: 280px;
     color: var(--text);
   }
 
-  td.company-name {
-    font-weight: 600;
-    white-space: nowrap;
-    color: var(--text);
-  }
-
-  td.description {
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.55;
-  }
-
-  td a {
-    color: var(--link);
-    text-decoration: none;
-    font-size: 12px;
-  }
-
-  td a:hover { color: #aaaaee; text-decoration: underline; }
+  td.company-name { font-weight: 600; white-space: nowrap; }
+  td.description  { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
+  td a            { color: var(--link); text-decoration: none; font-size: 12px; }
+  td a:hover      { text-decoration: underline; }
 
   tr:hover td { background: var(--hover-row); }
   tr:last-child td { border-bottom: none; }
 
-  /* ── Empty / loading states ──────────────────────────────── */
+  .tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border: 1px solid rgba(17,94,210,0.25);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  /* ── Empty / loading ─────────────────────────────────────────── */
   #empty-state {
     display: flex;
     flex-direction: column;
@@ -219,21 +463,9 @@
     padding: 48px 40px;
     color: var(--text-dim);
   }
-
-  #empty-state .icon { font-size: 36px; opacity: 0.4; }
-
-  #empty-state p {
-    font-size: 15px;
-    color: var(--text-muted);
-    font-weight: 500;
-  }
-
-  #empty-state small {
-    font-size: 12.5px;
-    color: var(--text-dim);
-    text-align: center;
-    line-height: 1.7;
-  }
+  #empty-state .icon { font-size: 32px; opacity: 0.3; }
+  #empty-state p     { font-size: 15px; color: var(--text-muted); font-weight: 500; }
+  #empty-state small { font-size: 12.5px; color: var(--text-dim); text-align: center; line-height: 1.7; }
 
   #loading {
     display: none;
@@ -244,100 +476,57 @@
     letter-spacing: 0.04em;
   }
 
-  /* ── Tag / badge ─────────────────────────────────────────── */
-  .tag {
-    display: inline-block;
-    background: var(--tag-bg);
-    color: var(--tag-text);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 2px 8px;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-  }
-
-  /* ── Export button ───────────────────────────────────────── */
-  #export-btn {
-    padding: 5px 12px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 11.5px;
-    cursor: pointer;
-    color: var(--text-muted);
-    display: none;
-    transition: border-color 0.15s, color 0.15s;
-    letter-spacing: 0.02em;
-  }
-
-  #export-btn:hover {
-    border-color: rgba(255,255,255,0.2);
-    color: var(--text);
-  }
-
-  /* ── Chat history ────────────────────────────────────────── */
+  /* ── Chat history ────────────────────────────────────────────── */
   #chat-history {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    max-height: 96px;
+    gap: 3px;
+    max-height: 80px;
     overflow-y: auto;
     flex-shrink: 0;
     padding: 0 2px;
   }
 
-  .chat-bubble {
-    display: flex;
-    gap: 8px;
-    align-items: baseline;
-    font-size: 12.5px;
-  }
-
+  .chat-bubble { display: flex; gap: 8px; align-items: baseline; font-size: 12px; }
   .chat-bubble .label {
     font-weight: 600;
     color: var(--text-dim);
     white-space: nowrap;
-    font-size: 11px;
+    font-size: 10.5px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
-
   .chat-bubble .text { color: var(--text-muted); line-height: 1.5; }
   .chat-bubble.answer .text { color: var(--text); }
 
-  /* ── Input area ──────────────────────────────────────────── */
+  /* ── Input area ──────────────────────────────────────────────── */
   #input-area {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 10px 12px;
+    padding: 9px 12px;
     display: flex;
     gap: 10px;
     align-items: center;
     flex-shrink: 0;
     transition: border-color 0.15s;
   }
-
-  #input-area:focus-within {
-    border-color: rgba(255,255,255,0.18);
-  }
+  #input-area:focus-within { border-color: rgba(17,94,210,0.5); }
 
   #query-input {
     flex: 1;
     border: none;
     outline: none;
-    font-size: 14.5px;
+    font-size: 14px;
     background: transparent;
     color: var(--text);
     font-family: inherit;
   }
-
   #query-input::placeholder { color: var(--text-dim); }
 
   #send-btn {
-    background: var(--accent);
-    color: #0b0b0e;
+    background: var(--blue);
+    color: #fff;
     border: none;
     border-radius: 7px;
     padding: 7px 20px;
@@ -345,71 +534,119 @@
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
-    transition: opacity 0.15s;
-    letter-spacing: 0.01em;
+    transition: background 0.15s;
     font-family: inherit;
   }
-
-  #send-btn:hover { opacity: 0.88; }
-  #send-btn:disabled { opacity: 0.3; cursor: default; }
+  #send-btn:hover    { background: var(--blue-hover); }
+  #send-btn:disabled { opacity: 0.4; cursor: default; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-left">
-    <img
-      class="logo"
-      src="https://www.unmatched.ventures/assets/images/original/brand/unmatched-ventures-logo-white-2Kt_lkZ.svg"
-      alt="Unmatched Ventures"
-      onerror="this.style.display='none'; document.querySelector('.header-title').style.color='#f0f0f4';"
-    />
-    <div class="header-divider"></div>
-    <span class="header-title">Company Search</span>
-  </div>
-  <span id="stats">Loading...</span>
-</header>
-
-<main>
-  <!-- Results table -->
-  <div id="results-area">
-    <div id="results-header">
-      <h2>Results</h2>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <span id="result-count"></span>
-        <button id="export-btn" onclick="exportCSV()">Export CSV</button>
-      </div>
+<!-- ── Login screen ───────────────────────────────────────────────── -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logos">
+      <img src="https://www.unmatched.ventures/assets/images/original/brand/unmatched-ventures-logo-white-2Kt_lkZ.svg"
+           alt="Unmatched Ventures"
+           onerror="this.style.display='none'">
+      <span class="times">×</span>
+      <img src="https://safirepartners.com/wp-content/themes/safirepartners/images/logo.png"
+           alt="Safire Partners"
+           onerror="this.style.display='none'">
     </div>
-    <div id="sql-display"></div>
-    <div id="table-wrap">
-      <div id="empty-state">
-        <div class="icon">⌕</div>
-        <p>Search your company database</p>
-        <small>
-          Try &ldquo;Aerospace companies in California with 500+ employees&rdquo;<br>
-          or &ldquo;Defense companies founded after 2015&rdquo;<br>
-          or &ldquo;Robotics firms based in Texas&rdquo;
-        </small>
-      </div>
-      <div id="loading">Searching&hellip;</div>
-      <table id="results-table" style="display:none;">
-        <thead id="table-head"></thead>
-        <tbody id="table-body"></tbody>
-      </table>
+    <div class="login-title">
+      <h1>Company Search</h1>
+      <p>Enter your team password to continue</p>
+    </div>
+    <div class="login-form">
+      <input id="password-input" type="password" placeholder="Password" autocomplete="current-password" />
+      <button id="login-btn" onclick="doLogin()">Sign In</button>
+      <div id="login-error"></div>
+    </div>
+    <div class="login-footer">
+      Internal tool · Unmatched Ventures × Safire Partners
     </div>
   </div>
+</div>
 
-  <!-- Chat history -->
-  <div id="chat-history"></div>
+<!-- ── Main app ───────────────────────────────────────────────────── -->
+<div id="app" class="hidden">
 
-  <!-- Input -->
-  <div id="input-area">
-    <input id="query-input" type="text"
-      placeholder='Ask anything — "Robotics companies in CA with over 100 employees"'
-      autocomplete="off" />
-    <button id="send-btn" onclick="sendQuery()">Search</button>
+  <header>
+    <div class="header-left">
+      <div class="header-logos">
+        <img src="https://www.unmatched.ventures/assets/images/original/brand/unmatched-ventures-logo-white-2Kt_lkZ.svg"
+             alt="Unmatched Ventures"
+             onerror="this.style.display='none'">
+        <span class="times">×</span>
+        <img src="https://safirepartners.com/wp-content/themes/safirepartners/images/logo.png"
+             alt="Safire Partners"
+             onerror="this.style.display='none'">
+      </div>
+      <div class="header-divider"></div>
+      <span class="header-title">Company Search</span>
+    </div>
+    <div class="header-right">
+      <span id="stats"></span>
+      <button id="logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </header>
+
+  <div class="body-wrap">
+
+    <!-- Sidebar: team activity -->
+    <div id="sidebar">
+      <div class="sidebar-header">
+        <h2>Team Activity</h2>
+      </div>
+      <div id="history-list">
+        <div class="history-empty">No searches yet.<br>Activity from all users<br>will appear here.</div>
+      </div>
+    </div>
+
+    <!-- Main search area -->
+    <div id="main-content">
+
+      <div id="results-area">
+        <div id="results-header">
+          <h2>Results</h2>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <span id="result-count"></span>
+            <button id="export-btn" onclick="exportCSV()">Export CSV</button>
+          </div>
+        </div>
+        <div id="sql-display"></div>
+        <div id="table-wrap">
+          <div id="empty-state">
+            <div class="icon">⌕</div>
+            <p>Search your company database</p>
+            <small>
+              Try &ldquo;Aerospace companies in California with 500+ employees&rdquo;<br>
+              or &ldquo;Defense companies founded after 2015&rdquo;<br>
+              or &ldquo;Robotics firms based in Texas&rdquo;
+            </small>
+          </div>
+          <div id="loading">Searching&hellip;</div>
+          <table id="results-table" style="display:none;">
+            <thead id="table-head"></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="chat-history"></div>
+
+      <div id="input-area">
+        <input id="query-input" type="text"
+          placeholder='Ask anything — "Robotics companies in CA with over 100 employees"'
+          autocomplete="off" />
+        <button id="send-btn" onclick="sendQuery()">Search</button>
+      </div>
+
+    </div>
   </div>
-</main>
+</div>
 
 <script>
   let history = [];
@@ -423,25 +660,142 @@
     'employees','website','linkedin','description','notes'
   ];
 
-  async function init() {
+  // ── Auth ────────────────────────────────────────────────────────
+
+  async function checkAuth() {
+    const res = await fetch('/api/history');
+    if (res.status === 401) {
+      showLogin();
+    } else {
+      const data = await res.json();
+      showApp();
+      renderHistory(data);
+      loadStats();
+      startHistoryPolling();
+    }
+  }
+
+  async function doLogin() {
+    const pw = document.getElementById('password-input').value;
+    if (!pw) return;
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true;
+    document.getElementById('login-error').textContent = '';
+
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw })
+      });
+      if (res.ok) {
+        showApp();
+        loadStats();
+        loadHistory();
+        startHistoryPolling();
+      } else {
+        document.getElementById('login-error').textContent = 'Incorrect password. Try again.';
+        document.getElementById('password-input').value = '';
+        document.getElementById('password-input').focus();
+      }
+    } catch (e) {
+      document.getElementById('login-error').textContent = 'Connection error.';
+    }
+    btn.disabled = false;
+  }
+
+  async function doLogout() {
+    await fetch('/api/logout', { method: 'POST' });
+    location.reload();
+  }
+
+  function showLogin() {
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('app').classList.add('hidden');
+    setTimeout(() => document.getElementById('password-input').focus(), 50);
+  }
+
+  function showApp() {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+  }
+
+  // ── Stats & history ─────────────────────────────────────────────
+
+  async function loadStats() {
     const res = await fetch('/api/stats');
     const data = await res.json();
     document.getElementById('stats').textContent =
       `${data.total.toLocaleString()} companies`;
   }
 
+  async function loadHistory() {
+    const res = await fetch('/api/history');
+    if (res.ok) {
+      const data = await res.json();
+      renderHistory(data);
+    }
+  }
+
+  let _historyPollTimer = null;
+  function startHistoryPolling() {
+    if (_historyPollTimer) return;
+    _historyPollTimer = setInterval(loadHistory, 15000);
+  }
+
+  function renderHistory(items) {
+    const list = document.getElementById('history-list');
+    if (!items.length) {
+      list.innerHTML = '<div class="history-empty">No searches yet.<br>Activity from all users<br>will appear here.</div>';
+      return;
+    }
+    list.innerHTML = items.map(item => `
+      <div class="history-item" onclick="rerunSearch(${JSON.stringify(item.query).replace(/"/g, '&quot;')})">
+        <div class="history-query">${escHtml(item.query)}</div>
+        <div class="history-meta">
+          <span class="history-time">${formatTime(item.timestamp)}</span>
+          <span class="history-count">${item.result_count.toLocaleString()} results</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function rerunSearch(query) {
+    document.getElementById('query-input').value = query;
+    sendQuery();
+  }
+
+  function formatTime(ts) {
+    if (!ts) return '';
+    const parts = ts.replace(' UTC', '').split(' ');
+    if (parts.length === 2) {
+      const [date, time] = parts;
+      const [h, m] = time.split(':');
+      const hour = parseInt(h);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const h12 = hour % 12 || 12;
+      return `${h12}:${m} ${ampm}`;
+    }
+    return ts;
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Search ──────────────────────────────────────────────────────
+
   function orderColumns(cols) {
     const lower = cols.map(c => c.toLowerCase());
-    const priority = PRIORITY_COLS.filter(c => lower.includes(c))
+    const priority = PRIORITY_COLS
+      .filter(c => lower.includes(c))
       .map(c => cols[lower.indexOf(c)]);
     const rest = cols.filter(c => !PRIORITY_COLS.includes(c.toLowerCase()));
     return [...priority, ...rest];
   }
 
   function formatHeader(col) {
-    return col
-      .replace(/_+/g, ' ')
-      .replace(/\b\w/g, l => l.toUpperCase());
+    return col.replace(/_+/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
 
   async function sendQuery() {
@@ -457,6 +811,7 @@
     document.getElementById('results-table').style.display = 'none';
     document.getElementById('loading').style.display = 'block';
     document.getElementById('export-btn').style.display = 'none';
+    document.getElementById('sql-display').style.display = 'none';
 
     addChatBubble('You', query);
     input.value = '';
@@ -464,9 +819,11 @@
     try {
       const res = await fetch('/api/query', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query, history })
       });
+
+      if (res.status === 401) { showLogin(); return; }
 
       const data = await res.json();
 
@@ -475,8 +832,7 @@
         document.getElementById('empty-state').style.display = 'flex';
       } else {
         history.push({ query, sql: data.sql });
-
-        currentRows = data.rows;
+        currentRows    = data.rows;
         currentColumns = orderColumns(data.columns);
         sortCol = -1;
 
@@ -491,8 +847,9 @@
         sqlEl.textContent = data.sql;
         sqlEl.style.display = 'block';
 
-        document.getElementById('export-btn').style.display =
-          data.count > 0 ? 'block' : 'none';
+        document.getElementById('export-btn').style.display = data.count > 0 ? 'block' : 'none';
+
+        setTimeout(loadHistory, 500);
       }
     } catch (e) {
       addChatBubble('Error', '⚠ Could not connect to server.', true);
@@ -506,8 +863,8 @@
   }
 
   function renderTable(columns, rows) {
-    const head = document.getElementById('table-head');
-    const body = document.getElementById('table-body');
+    const head  = document.getElementById('table-head');
+    const body  = document.getElementById('table-body');
     const table = document.getElementById('results-table');
 
     head.innerHTML = '';
@@ -518,7 +875,6 @@
       const th = document.createElement('th');
       th.textContent = formatHeader(col);
       th.title = 'Click to sort';
-      th.dataset.idx = i;
       th.onclick = () => sortTable(i);
       tr.appendChild(th);
     });
@@ -529,7 +885,7 @@
       columns.forEach((col, i) => {
         const colLower = col.toLowerCase();
         const val = row[i] ?? '';
-        const td = document.createElement('td');
+        const td  = document.createElement('td');
 
         if (colLower === 'company') {
           td.className = 'company-name';
@@ -540,15 +896,13 @@
         } else if (colLower === 'website' && val) {
           const a = document.createElement('a');
           a.href = val.startsWith('http') ? val : 'https://' + val;
-          a.target = '_blank';
-          a.rel = 'noopener';
+          a.target = '_blank'; a.rel = 'noopener';
           a.textContent = val.replace(/^https?:\/\//, '').replace(/\/$/, '');
           td.appendChild(a);
         } else if (colLower === 'linkedin' && val) {
           const a = document.createElement('a');
           a.href = val.startsWith('http') ? val : 'https://' + val;
-          a.target = '_blank';
-          a.rel = 'noopener';
+          a.target = '_blank'; a.rel = 'noopener';
           a.textContent = 'LinkedIn ↗';
           td.appendChild(a);
         } else if (colLower === 'category' && val) {
@@ -564,7 +918,6 @@
       body.appendChild(tr);
     });
 
-    // Update sort indicators
     document.querySelectorAll('th').forEach((th, i) => {
       th.classList.remove('sort-asc', 'sort-desc');
       if (i === sortCol) th.classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
@@ -580,10 +933,8 @@
   function sortTable(colIdx) {
     if (sortCol === colIdx) sortAsc = !sortAsc;
     else { sortCol = colIdx; sortAsc = true; }
-
     const sorted = [...currentRows].sort((a, b) => {
-      const av = a[colIdx] ?? '';
-      const bv = b[colIdx] ?? '';
+      const av = a[colIdx] ?? '', bv = b[colIdx] ?? '';
       const an = parseFloat(av), bn = parseFloat(bv);
       if (!isNaN(an) && !isNaN(bn)) return sortAsc ? an - bn : bn - an;
       return sortAsc ? String(av).localeCompare(String(bv))
@@ -596,7 +947,7 @@
     const container = document.getElementById('chat-history');
     const div = document.createElement('div');
     div.className = 'chat-bubble' + (isAnswer ? ' answer' : '');
-    div.innerHTML = `<span class="label">${label}</span><span class="text">${text}</span>`;
+    div.innerHTML = `<span class="label">${label}</span><span class="text">${escHtml(text)}</span>`;
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
   }
@@ -610,7 +961,7 @@
         return v.includes(',') || v.includes('\n') ? `"${v}"` : v;
       }).join(','));
     });
-    const blob = new Blob([lines.join('\n')], {type: 'text/csv'});
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'company_results.csv';
@@ -621,7 +972,12 @@
     if (e.key === 'Enter') sendQuery();
   });
 
-  init();
+  document.getElementById('password-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  // ── Init ────────────────────────────────────────────────────────
+  checkAuth();
 </script>
 </body>
 </html>
