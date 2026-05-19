@@ -114,6 +114,7 @@ The SQLite table is called "companies" with these columns:
 
 Rules:
 - Return ONLY the SQL query, no explanation, no markdown.
+- Always SELECT: company, category, city, state, country, employees, website, linkedin, description, year__nfounded — plus any other columns relevant to the query. Never omit website or linkedin.
 - Use LIKE '%value%' for text searches (case-insensitive with LOWER()).
 - For employee counts, the Employees column contains numbers as text — cast with CAST(Employees AS INTEGER).
 - Always add LIMIT 500 unless the user asks for more.

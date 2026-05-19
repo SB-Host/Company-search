@@ -119,6 +119,56 @@
     background: var(--surface); border-right: 1px solid var(--border);
     display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden;
   }
+  /* Sidebar tabs */
+  .sidebar-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .s-tab {
+    flex: 1; padding: 10px 0; font-size: 11px; font-weight: 600;
+    letter-spacing: .05em; text-transform: uppercase; text-align: center;
+    color: var(--dim); cursor: pointer; border: none; background: transparent;
+    font-family: inherit; border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s; position: relative; top: 1px;
+  }
+  .s-tab:hover { color: var(--muted); }
+  .s-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  /* Activity panel */
+  #panel-activity { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+  #panel-activity.hidden { display: none; }
+
+  /* Analytics panel */
+  #panel-analytics { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+  #panel-analytics.visible { display: flex; }
+
+  #analytics-scroll {
+    flex: 1; overflow-y: auto; padding: 12px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  #analytics-scroll::-webkit-scrollbar { width: 4px; }
+  #analytics-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.07); border-radius: 2px; }
+
+  .an-section h3 {
+    font-size: 9.5px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--dim); margin-bottom: 10px;
+  }
+  .an-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .an-stat {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 7px; padding: 10px 11px;
+  }
+  .an-stat .av { font-size: 18px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+  .an-stat .al { font-size: 10px; color: var(--dim); margin-top: 3px; }
+  .an-stat.c-blue   .av { color: #5588ee; }
+  .an-stat.c-green  .av { color: #10b981; }
+  .an-stat.c-purple .av { color: #a78bfa; }
+
+  .an-bars { display: flex; flex-direction: column; gap: 8px; }
+  .an-bar  { display: flex; flex-direction: column; gap: 3px; }
+  .an-bar-top { display: flex; justify-content: space-between; align-items: baseline; }
+  .an-bar-name { font-size: 11.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 75%; }
+  .an-bar-num  { font-size: 10px; color: var(--dim); font-weight: 600; }
+  .an-track { height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+  .an-fill  { height: 100%; border-radius: 2px; transition: width .7s cubic-bezier(.4,0,.2,1); }
+
   .sidebar-hdr {
     padding: 12px 16px 10px; border-bottom: 1px solid var(--border2);
     display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
@@ -199,12 +249,7 @@
     display: none; font-family: inherit; transition: border-color .15s, color .15s;
   }
   #export-btn:hover { border-color: rgba(255,255,255,.18); color: var(--text); }
-  #sql-display {
-    padding: 6px 14px; background: var(--surface2); border-bottom: 1px solid var(--border2);
-    font-size: 10.5px; font-family: 'SF Mono', Monaco, monospace; color: var(--dim);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    flex-shrink: 0; display: none;
-  }
+  #sql-display { display: none !important; }
   #table-wrap { overflow: auto; flex: 1; }
   #table-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
   #table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,.07); border-radius: 3px; }
@@ -333,14 +378,29 @@
 
     <!-- Sidebar -->
     <div id="sidebar">
-      <div class="sidebar-hdr">
-        <h2>Team Activity</h2>
-        <span class="sidebar-count" id="hist-count">0</span>
+      <div class="sidebar-tabs">
+        <button class="s-tab active" id="tab-act" onclick="switchTab('activity')">Activity</button>
+        <button class="s-tab"        id="tab-an"  onclick="switchTab('analytics')">Analytics</button>
       </div>
-      <div id="history-list">
-        <div class="hist-empty">
-          <div class="hist-empty-icon">🔍</div>
-          Searches from all<br>team members appear here
+
+      <!-- Activity -->
+      <div id="panel-activity">
+        <div class="sidebar-hdr">
+          <h2>Team Activity</h2>
+          <span class="sidebar-count" id="hist-count">0</span>
+        </div>
+        <div id="history-list">
+          <div class="hist-empty">
+            <div class="hist-empty-icon">🔍</div>
+            Searches from all<br>team members appear here
+          </div>
+        </div>
+      </div>
+
+      <!-- Analytics -->
+      <div id="panel-analytics">
+        <div id="analytics-scroll">
+          <div style="font-size:12px;color:var(--dim);text-align:center;padding:20px 0">Loading…</div>
         </div>
       </div>
     </div>
@@ -488,6 +548,78 @@
     document.getElementById('stats').textContent = d.total.toLocaleString() + ' companies';
     document.getElementById('hero-sub').textContent =
       `Search ${d.total.toLocaleString()} companies with natural language`;
+  }
+
+  // ── Sidebar tabs ─────────────────────────────────────
+  let analyticsLoaded = false;
+
+  function switchTab(tab) {
+    document.getElementById('tab-act').classList.toggle('active', tab === 'activity');
+    document.getElementById('tab-an').classList.toggle('active',  tab === 'analytics');
+    document.getElementById('panel-activity').classList.toggle('hidden',   tab !== 'activity');
+    document.getElementById('panel-analytics').classList.toggle('visible', tab === 'analytics');
+    if (tab === 'analytics' && !analyticsLoaded) loadAnalytics();
+  }
+
+  async function loadAnalytics() {
+    const res = await fetch('/api/analytics');
+    if (!res.ok) return;
+    const d = await res.json();
+    analyticsLoaded = true;
+    const maxCat   = d.top_categories[0]?.count || 1;
+    const maxState = d.top_states[0]?.count || 1;
+    document.getElementById('analytics-scroll').innerHTML = `
+      <div class="an-section">
+        <h3>Overview</h3>
+        <div class="an-stat-grid">
+          <div class="an-stat">
+            <div class="av">${d.total_companies.toLocaleString()}</div>
+            <div class="al">Companies</div>
+          </div>
+          <div class="an-stat c-blue">
+            <div class="av">${d.session_searches}</div>
+            <div class="al">Searches</div>
+          </div>
+          <div class="an-stat c-green">
+            <div class="av">${d.avg_results.toLocaleString()}</div>
+            <div class="al">Avg Results</div>
+          </div>
+          <div class="an-stat c-purple">
+            <div class="av">${d.top_categories.length}</div>
+            <div class="al">Categories</div>
+          </div>
+        </div>
+      </div>
+      <div class="an-section">
+        <h3>Top Categories</h3>
+        <div class="an-bars">
+          ${d.top_categories.map((c,i) => `
+            <div class="an-bar">
+              <div class="an-bar-top">
+                <span class="an-bar-name">${esc(c.name)}</span>
+                <span class="an-bar-num">${c.count}</span>
+              </div>
+              <div class="an-track">
+                <div class="an-fill" style="width:${Math.round(c.count/maxCat*100)}%;background:${COLORS[i%COLORS.length]}"></div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="an-section">
+        <h3>Top States</h3>
+        <div class="an-bars">
+          ${d.top_states.map((s,i) => `
+            <div class="an-bar">
+              <div class="an-bar-top">
+                <span class="an-bar-name">${esc(s.name)}</span>
+                <span class="an-bar-num">${s.count}</span>
+              </div>
+              <div class="an-track">
+                <div class="an-fill" style="width:${Math.round(s.count/maxState*100)}%;background:${COLORS[(i+2)%COLORS.length]}"></div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
   }
 
   // ── History ───────────────────────────────────────────
