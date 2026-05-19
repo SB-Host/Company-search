@@ -1,0 +1,10 @@
+companies.db
+__pycache__/
+*.pyc
+.DS_Store
+*.csv.bak
+CSV - Master company list - empty city and state - Sheet1.csv
+Master Company List Pass1 - MASTER.csv
+requirements_cleaner.txt
+clean_companies.py
+.env

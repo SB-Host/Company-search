@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Company Search — Unmatched Ventures</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #0b0b0e;
+    --surface:    #13131a;
+    --surface2:   #1a1a24;
+    --border:     rgba(255,255,255,0.08);
+    --border2:    rgba(255,255,255,0.05);
+    --text:       #f0f0f4;
+    --text-muted: #7a7a90;
+    --text-dim:   #4a4a60;
+    --accent:     #ffffff;
+    --accent-bg:  rgba(255,255,255,0.06);
+    --tag-bg:     rgba(255,255,255,0.07);
+    --tag-text:   #b0b0c8;
+    --link:       #8888cc;
+    --hover-row:  rgba(255,255,255,0.03);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .logo {
+    height: 28px;
+    width: auto;
+    display: block;
+  }
+
+  .header-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+  }
+
+  .header-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  #stats {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Main layout ─────────────────────────────────────────── */
+  main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    padding: 16px 20px;
+    gap: 12px;
+  }
+
+  /* ── Results area ────────────────────────────────────────── */
+  #results-area {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  #results-header {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  #results-header h2 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  #result-count {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  #sql-display {
+    padding: 7px 16px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border2);
+    font-size: 11px;
+    font-family: 'SF Mono', 'Fira Code', Monaco, monospace;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+    display: none;
+    letter-spacing: 0.01em;
+  }
+
+  #table-wrap {
+    overflow: auto;
+    flex: 1;
+  }
+
+  /* Scrollbar */
+  #table-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
+  #table-wrap::-webkit-scrollbar-track { background: transparent; }
+  #table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+  #table-wrap::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead {
+    position: sticky;
+    top: 0;
+    background: var(--surface2);
+    z-index: 1;
+  }
+
+  th {
+    padding: 9px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  th:hover { color: var(--text); }
+  th.sort-asc::after  { content: ' ↑'; color: var(--text-dim); }
+  th.sort-desc::after { content: ' ↓'; color: var(--text-dim); }
+
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border2);
+    vertical-align: top;
+    max-width: 300px;
+    color: var(--text);
+  }
+
+  td.company-name {
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--text);
+  }
+
+  td.description {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  td a {
+    color: var(--link);
+    text-decoration: none;
+    font-size: 12px;
+  }
+
+  td a:hover { color: #aaaaee; text-decoration: underline; }
+
+  tr:hover td { background: var(--hover-row); }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── Empty / loading states ──────────────────────────────── */
+  #empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 10px;
+    padding: 48px 40px;
+    color: var(--text-dim);
+  }
+
+  #empty-state .icon { font-size: 36px; opacity: 0.4; }
+
+  #empty-state p {
+    font-size: 15px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  #empty-state small {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.7;
+  }
+
+  #loading {
+    display: none;
+    font-size: 13px;
+    color: var(--text-dim);
+    padding: 32px;
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Tag / badge ─────────────────────────────────────────── */
+  .tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Export button ───────────────────────────────────────── */
+  #export-btn {
+    padding: 5px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 11.5px;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: none;
+    transition: border-color 0.15s, color 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  #export-btn:hover {
+    border-color: rgba(255,255,255,0.2);
+    color: var(--text);
+  }
+
+  /* ── Chat history ────────────────────────────────────────── */
+  #chat-history {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 96px;
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding: 0 2px;
+  }
+
+  .chat-bubble {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    font-size: 12.5px;
+  }
+
+  .chat-bubble .label {
+    font-weight: 600;
+    color: var(--text-dim);
+    white-space: nowrap;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .chat-bubble .text { color: var(--text-muted); line-height: 1.5; }
+  .chat-bubble.answer .text { color: var(--text); }
+
+  /* ── Input area ──────────────────────────────────────────── */
+  #input-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+    transition: border-color 0.15s;
+  }
+
+  #input-area:focus-within {
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  #query-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14.5px;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+  }
+
+  #query-input::placeholder { color: var(--text-dim); }
+
+  #send-btn {
+    background: var(--accent);
+    color: #0b0b0e;
+    border: none;
+    border-radius: 7px;
+    padding: 7px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+    letter-spacing: 0.01em;
+    font-family: inherit;
+  }
+
+  #send-btn:hover { opacity: 0.88; }
+  #send-btn:disabled { opacity: 0.3; cursor: default; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <img
+      class="logo"
+      src="https://www.unmatched.ventures/assets/images/original/brand/unmatched-ventures-logo-white-2Kt_lkZ.svg"
+      alt="Unmatched Ventures"
+      onerror="this.style.display='none'; document.querySelector('.header-title').style.color='#f0f0f4';"
+    />
+    <div class="header-divider"></div>
+    <span class="header-title">Company Search</span>
+  </div>
+  <span id="stats">Loading...</span>
+</header>
+
+<main>
+  <!-- Results table -->
+  <div id="results-area">
+    <div id="results-header">
+      <h2>Results</h2>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span id="result-count"></span>
+        <button id="export-btn" onclick="exportCSV()">Export CSV</button>
+      </div>
+    </div>
+    <div id="sql-display"></div>
+    <div id="table-wrap">
+      <div id="empty-state">
+        <div class="icon">⌕</div>
+        <p>Search your company database</p>
+        <small>
+          Try &ldquo;Aerospace companies in California with 500+ employees&rdquo;<br>
+          or &ldquo;Defense companies founded after 2015&rdquo;<br>
+          or &ldquo;Robotics firms based in Texas&rdquo;
+        </small>
+      </div>
+      <div id="loading">Searching&hellip;</div>
+      <table id="results-table" style="display:none;">
+        <thead id="table-head"></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Chat history -->
+  <div id="chat-history"></div>
+
+  <!-- Input -->
+  <div id="input-area">
+    <input id="query-input" type="text"
+      placeholder='Ask anything — "Robotics companies in CA with over 100 employees"'
+      autocomplete="off" />
+    <button id="send-btn" onclick="sendQuery()">Search</button>
+  </div>
+</main>
+
+<script>
+  let history = [];
+  let currentRows = [];
+  let currentColumns = [];
+  let sortCol = -1;
+  let sortAsc = true;
+
+  const PRIORITY_COLS = [
+    'company','category','city','state','country',
+    'employees','website','linkedin','description','notes'
+  ];
+
+  async function init() {
+    const res = await fetch('/api/stats');
+    const data = await res.json();
+    document.getElementById('stats').textContent =
+      `${data.total.toLocaleString()} companies`;
+  }
+
+  function orderColumns(cols) {
+    const lower = cols.map(c => c.toLowerCase());
+    const priority = PRIORITY_COLS.filter(c => lower.includes(c))
+      .map(c => cols[lower.indexOf(c)]);
+    const rest = cols.filter(c => !PRIORITY_COLS.includes(c.toLowerCase()));
+    return [...priority, ...rest];
+  }
+
+  function formatHeader(col) {
+    return col
+      .replace(/_+/g, ' ')
+      .replace(/\b\w/g, l => l.toUpperCase());
+  }
+
+  async function sendQuery() {
+    const input = document.getElementById('query-input');
+    const query = input.value.trim();
+    if (!query) return;
+
+    const btn = document.getElementById('send-btn');
+    btn.disabled = true;
+    input.disabled = true;
+
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('results-table').style.display = 'none';
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('export-btn').style.display = 'none';
+
+    addChatBubble('You', query);
+    input.value = '';
+
+    try {
+      const res = await fetch('/api/query', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ query, history })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        addChatBubble('Error', '⚠ ' + (data.detail || 'Something went wrong'), true);
+        document.getElementById('empty-state').style.display = 'flex';
+      } else {
+        history.push({ query, sql: data.sql });
+
+        currentRows = data.rows;
+        currentColumns = orderColumns(data.columns);
+        sortCol = -1;
+
+        renderTable(currentColumns, currentRows);
+
+        const msg = data.count === 0
+          ? 'No companies matched.'
+          : `Found ${data.count.toLocaleString()} ${data.count === 1 ? 'company' : 'companies'}`;
+        addChatBubble('Result', msg, true);
+
+        const sqlEl = document.getElementById('sql-display');
+        sqlEl.textContent = data.sql;
+        sqlEl.style.display = 'block';
+
+        document.getElementById('export-btn').style.display =
+          data.count > 0 ? 'block' : 'none';
+      }
+    } catch (e) {
+      addChatBubble('Error', '⚠ Could not connect to server.', true);
+      document.getElementById('empty-state').style.display = 'flex';
+    }
+
+    document.getElementById('loading').style.display = 'none';
+    btn.disabled = false;
+    input.disabled = false;
+    input.focus();
+  }
+
+  function renderTable(columns, rows) {
+    const head = document.getElementById('table-head');
+    const body = document.getElementById('table-body');
+    const table = document.getElementById('results-table');
+
+    head.innerHTML = '';
+    body.innerHTML = '';
+
+    const tr = document.createElement('tr');
+    columns.forEach((col, i) => {
+      const th = document.createElement('th');
+      th.textContent = formatHeader(col);
+      th.title = 'Click to sort';
+      th.dataset.idx = i;
+      th.onclick = () => sortTable(i);
+      tr.appendChild(th);
+    });
+    head.appendChild(tr);
+
+    rows.forEach(row => {
+      const tr = document.createElement('tr');
+      columns.forEach((col, i) => {
+        const colLower = col.toLowerCase();
+        const val = row[i] ?? '';
+        const td = document.createElement('td');
+
+        if (colLower === 'company') {
+          td.className = 'company-name';
+          td.textContent = val;
+        } else if (colLower === 'description') {
+          td.className = 'description';
+          td.textContent = val;
+        } else if (colLower === 'website' && val) {
+          const a = document.createElement('a');
+          a.href = val.startsWith('http') ? val : 'https://' + val;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = val.replace(/^https?:\/\//, '').replace(/\/$/, '');
+          td.appendChild(a);
+        } else if (colLower === 'linkedin' && val) {
+          const a = document.createElement('a');
+          a.href = val.startsWith('http') ? val : 'https://' + val;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = 'LinkedIn ↗';
+          td.appendChild(a);
+        } else if (colLower === 'category' && val) {
+          const span = document.createElement('span');
+          span.className = 'tag';
+          span.textContent = val;
+          td.appendChild(span);
+        } else {
+          td.textContent = val;
+        }
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+
+    // Update sort indicators
+    document.querySelectorAll('th').forEach((th, i) => {
+      th.classList.remove('sort-asc', 'sort-desc');
+      if (i === sortCol) th.classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
+    });
+
+    document.getElementById('result-count').textContent =
+      rows.length === 0 ? 'No results' : `${rows.length.toLocaleString()} results`;
+    table.style.display = rows.length > 0 ? 'table' : 'none';
+    if (rows.length === 0)
+      document.getElementById('empty-state').style.display = 'flex';
+  }
+
+  function sortTable(colIdx) {
+    if (sortCol === colIdx) sortAsc = !sortAsc;
+    else { sortCol = colIdx; sortAsc = true; }
+
+    const sorted = [...currentRows].sort((a, b) => {
+      const av = a[colIdx] ?? '';
+      const bv = b[colIdx] ?? '';
+      const an = parseFloat(av), bn = parseFloat(bv);
+      if (!isNaN(an) && !isNaN(bn)) return sortAsc ? an - bn : bn - an;
+      return sortAsc ? String(av).localeCompare(String(bv))
+                     : String(bv).localeCompare(String(av));
+    });
+    renderTable(currentColumns, sorted);
+  }
+
+  function addChatBubble(label, text, isAnswer = false) {
+    const container = document.getElementById('chat-history');
+    const div = document.createElement('div');
+    div.className = 'chat-bubble' + (isAnswer ? ' answer' : '');
+    div.innerHTML = `<span class="label">${label}</span><span class="text">${text}</span>`;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function exportCSV() {
+    if (!currentRows.length) return;
+    const lines = [currentColumns.join(',')];
+    currentRows.forEach(row => {
+      lines.push(currentColumns.map((_, i) => {
+        const v = String(row[i] ?? '').replace(/"/g, '""');
+        return v.includes(',') || v.includes('\n') ? `"${v}"` : v;
+      }).join(','));
+    });
+    const blob = new Blob([lines.join('\n')], {type: 'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'company_results.csv';
+    a.click();
+  }
+
+  document.getElementById('query-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendQuery();
+  });
+
+  init();
+</script>
+</body>
+</html>
