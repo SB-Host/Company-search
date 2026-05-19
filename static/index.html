@@ -23,6 +23,26 @@
     --blue-glow: rgba(17,94,210,0.22);
     --rose:      #f43f5e;
     --sidebar-w: 256px;
+    --logo-filter: brightness(0) invert(1);
+  }
+
+  /* ── Light mode ────────────────────────────────────────── */
+  body.light {
+    --bg:        #f4f4f8;
+    --surface:   #ffffff;
+    --surface2:  #ededf4;
+    --surface3:  #e4e4ee;
+    --border:    rgba(0,0,0,0.08);
+    --border2:   rgba(0,0,0,0.05);
+    --text:      #16162a;
+    --muted:     #52527a;
+    --dim:       #9898b8;
+    --blue:      #115ed2;
+    --blue-h:    #1a6fe8;
+    --blue-dim:  rgba(17,94,210,0.10);
+    --blue-glow: rgba(17,94,210,0.20);
+    --rose:      #e03050;
+    --logo-filter: brightness(0) opacity(0.85);
   }
 
   body {
@@ -53,8 +73,8 @@
     display: flex; flex-direction: column; align-items: center; gap: 28px;
     box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 32px 64px rgba(0,0,0,0.6);
   }
-  .login-logos { display: flex; align-items: center; gap: 14px; height: 32px; }
-  .login-logos img { height: 100%; width: auto; max-width: 150px; object-fit: contain; filter: brightness(0) invert(1); opacity: .9; }
+  .login-logos { display: flex; align-items: center; gap: 14px; height: 36px; }
+  .login-logos img { height: 100%; width: auto; max-width: 160px; object-fit: contain; filter: var(--logo-filter); opacity: .92; }
   .login-logos .x { color: var(--dim); font-size: 16px; font-weight: 300; }
   .login-heading { text-align: center; }
   .login-heading h1 { font-size: 21px; font-weight: 700; letter-spacing: -.025em; margin-bottom: 6px; }
@@ -96,19 +116,20 @@
     opacity: .45;
   }
   .hdr-left  { display: flex; align-items: center; gap: 14px; }
-  .hdr-logos { display: flex; align-items: center; gap: 10px; height: 26px; }
-  .hdr-logos img { height: 100%; width: auto; max-width: 130px; object-fit: contain; filter: brightness(0) invert(1); opacity: .82; }
+  .hdr-logos { display: flex; align-items: center; gap: 10px; height: 32px; }
+  .hdr-logos img { height: 100%; width: auto; max-width: 140px; object-fit: contain; filter: var(--logo-filter); opacity: .88; }
   .hdr-logos .x  { color: var(--dim); font-size: 13px; font-weight: 300; }
   .hdr-sep   { width: 1px; height: 16px; background: var(--border); }
   .hdr-title { font-size: 11.5px; font-weight: 600; color: var(--dim); letter-spacing: .07em; text-transform: uppercase; }
   .hdr-right { display: flex; align-items: center; gap: 10px; }
   .stat-pill { font-size: 11.5px; color: var(--muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; }
-  #logout-btn {
+  #logout-btn, #theme-btn {
     padding: 4px 11px; background: transparent; border: 1px solid var(--border);
     border-radius: 6px; font-size: 11.5px; color: var(--muted); cursor: pointer;
     font-family: inherit; transition: border-color .15s, color .15s;
   }
-  #logout-btn:hover { border-color: rgba(255,255,255,.18); color: var(--text); }
+  #logout-btn:hover, #theme-btn:hover { border-color: rgba(128,128,128,.35); color: var(--text); }
+  #theme-btn { padding: 4px 9px; font-size: 14px; line-height: 1; }
 
   /* ── Body ──────────────────────────────────────────────── */
   .body-wrap { display: flex; flex: 1; overflow: hidden; }
@@ -384,6 +405,7 @@
     </div>
     <div class="hdr-right">
       <span id="stats" class="stat-pill">Loading…</span>
+      <button id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
       <button id="logout-btn" onclick="doLogout()">Sign out</button>
     </div>
   </header>
@@ -885,6 +907,22 @@
 
   document.getElementById('query-input').addEventListener('keydown', e => { if (e.key==='Enter') sendQuery(); });
   document.getElementById('password-input').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+
+  // ── Theme ─────────────────────────────────────────────
+  function toggleTheme() {
+    const isLight = document.body.classList.toggle('light');
+    document.getElementById('theme-btn').textContent = isLight ? '🌙' : '☀️';
+    localStorage.setItem('uv-theme', isLight ? 'light' : 'dark');
+  }
+
+  (function initTheme() {
+    const saved = localStorage.getItem('uv-theme');
+    if (saved === 'light') {
+      document.body.classList.add('light');
+      const btn = document.getElementById('theme-btn');
+      if (btn) btn.textContent = '🌙';
+    }
+  })();
 
   checkAuth();
 </script>
