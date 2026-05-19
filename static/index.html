@@ -35,7 +35,7 @@
     overflow: hidden;
   }
 
-  /* ── Login ────────────────────────────────────── */
+  /* ── Login ─────────────────────────────────────────────── */
   #login-screen {
     position: fixed; inset: 0;
     background: var(--bg);
@@ -53,18 +53,15 @@
     display: flex; flex-direction: column; align-items: center; gap: 28px;
     box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 32px 64px rgba(0,0,0,0.6);
   }
-
   .login-logos { display: flex; align-items: center; gap: 14px; }
   .login-logos img { height: 28px; filter: brightness(0) invert(1); opacity: .9; }
-  .login-logos .x  { color: var(--dim); font-size: 16px; font-weight: 300; }
-
+  .login-logos .x { color: var(--dim); font-size: 16px; font-weight: 300; }
   .login-heading { text-align: center; }
   .login-heading h1 { font-size: 21px; font-weight: 700; letter-spacing: -.025em; margin-bottom: 6px; }
   .login-heading p  { font-size: 13px; color: var(--muted); }
-
   .login-form { width: 100%; display: flex; flex-direction: column; gap: 10px; }
   .login-form input {
-    width: 100%; padding: 11px 14px;
+    width: 100%; padding: 12px 14px;
     background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
     color: var(--text); font-size: 14px; font-family: inherit; outline: none;
     transition: border-color .15s, box-shadow .15s;
@@ -79,15 +76,14 @@
   }
   .login-form button:hover { background: var(--blue-h); box-shadow: 0 4px 20px var(--blue-glow); }
   .login-form button:disabled { opacity: .45; cursor: default; box-shadow: none; }
-
   #login-error { font-size: 12.5px; color: var(--rose); text-align: center; min-height: 16px; }
   .login-badge { font-size: 11px; color: var(--dim); padding: 5px 14px; border: 1px solid var(--border2); border-radius: 20px; }
 
-  /* ── App shell ────────────────────────────────── */
+  /* ── App shell ─────────────────────────────────────────── */
   #app { display: flex; flex-direction: column; height: 100vh; }
   #app.hidden { display: none; }
 
-  /* ── Header ──────────────────────────────────── */
+  /* ── Header ────────────────────────────────────────────── */
   header {
     background: var(--surface); border-bottom: 1px solid var(--border);
     padding: 0 20px; height: 50px;
@@ -99,20 +95,14 @@
     background: linear-gradient(90deg, var(--blue), #8b5cf6 50%, transparent);
     opacity: .45;
   }
-
   .hdr-left  { display: flex; align-items: center; gap: 14px; }
   .hdr-logos { display: flex; align-items: center; gap: 10px; }
   .hdr-logos img { height: 22px; filter: brightness(0) invert(1); opacity: .82; }
   .hdr-logos .x  { color: var(--dim); font-size: 13px; font-weight: 300; }
   .hdr-sep   { width: 1px; height: 16px; background: var(--border); }
   .hdr-title { font-size: 11.5px; font-weight: 600; color: var(--dim); letter-spacing: .07em; text-transform: uppercase; }
-
   .hdr-right { display: flex; align-items: center; gap: 10px; }
-  .stat-pill {
-    font-size: 11.5px; color: var(--muted);
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 20px; padding: 3px 10px;
-  }
+  .stat-pill { font-size: 11.5px; color: var(--muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; }
   #logout-btn {
     padding: 4px 11px; background: transparent; border: 1px solid var(--border);
     border-radius: 6px; font-size: 11.5px; color: var(--muted); cursor: pointer;
@@ -120,146 +110,82 @@
   }
   #logout-btn:hover { border-color: rgba(255,255,255,.18); color: var(--text); }
 
-  /* ── Body ────────────────────────────────────── */
+  /* ── Body ──────────────────────────────────────────────── */
   .body-wrap { display: flex; flex: 1; overflow: hidden; }
 
-  /* ── Sidebar (Activity only) ─────────────────── */
+  /* ── Sidebar ───────────────────────────────────────────── */
   #sidebar {
     width: var(--sidebar-w);
     background: var(--surface); border-right: 1px solid var(--border);
     display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden;
   }
-
   .sidebar-hdr {
     padding: 12px 16px 10px; border-bottom: 1px solid var(--border2);
     display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
   }
   .sidebar-hdr h2 { font-size: 10px; font-weight: 700; color: var(--dim); letter-spacing: .1em; text-transform: uppercase; }
   .sidebar-count { font-size: 10.5px; color: var(--dim); background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 1px 7px; }
-
   #history-list { flex: 1; overflow-y: auto; }
   #history-list::-webkit-scrollbar { width: 4px; }
   #history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.07); border-radius: 2px; }
-
-  .hist-empty {
-    padding: 32px 18px; font-size: 12px; color: var(--dim);
-    text-align: center; line-height: 1.8;
-  }
-  .hist-empty-icon { font-size: 24px; margin-bottom: 10px; opacity: .25; }
-
+  .hist-empty { padding: 32px 18px; font-size: 12px; color: var(--dim); text-align: center; line-height: 1.8; }
+  .hist-empty-icon { font-size: 22px; margin-bottom: 10px; opacity: .25; }
   .hist-item {
-    padding: 10px 14px; cursor: pointer;
-    border-bottom: 1px solid var(--border2);
+    padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border2);
     position: relative; transition: background .1s;
   }
   .hist-item:hover { background: rgba(255,255,255,.028); }
   .hist-item:hover .del-btn { opacity: 1; }
   .hist-item:last-child { border-bottom: none; }
-
   .del-btn {
     position: absolute; top: 9px; right: 10px;
     width: 17px; height: 17px; border-radius: 50%;
     background: rgba(244,63,94,.12); border: 1px solid rgba(244,63,94,.25);
     color: var(--rose); font-size: 9px; cursor: pointer;
     opacity: 0; transition: opacity .15s, background .15s;
-    display: flex; align-items: center; justify-content: center; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
   }
   .del-btn:hover { background: rgba(244,63,94,.28); }
-
   .hist-query {
-    font-size: 12px; color: var(--text); line-height: 1.4; margin-bottom: 4px;
-    padding-right: 22px;
+    font-size: 12px; color: var(--text); line-height: 1.4; margin-bottom: 4px; padding-right: 22px;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   }
   .hist-meta { display: flex; justify-content: space-between; align-items: center; }
   .hist-time { font-size: 10px; color: var(--dim); }
   .hist-cnt  { font-size: 10px; background: var(--blue-dim); color: #6699ee; border-radius: 10px; padding: 1px 7px; font-weight: 600; }
 
-  /* ── Main content ────────────────────────────── */
+  /* ── Main content ──────────────────────────────────────── */
   #main-content {
     display: flex; flex-direction: column; flex: 1; overflow: hidden;
     padding: 14px 16px 14px 14px; gap: 10px;
   }
 
-  /* ── Dashboard (initial view) ────────────────── */
-  #dashboard {
-    flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
-    padding: 4px 2px 8px;
+  /* ── Hero (landing state) ──────────────────────────────── */
+  #hero {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 28px;
+    padding: 40px 20px;
   }
-  #dashboard::-webkit-scrollbar { width: 6px; }
-  #dashboard::-webkit-scrollbar-thumb { background: rgba(255,255,255,.07); border-radius: 3px; }
-  #dashboard.hidden { display: none; }
+  #hero.hidden { display: none; }
 
-  .dash-welcome {
-    background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
-    border: 1px solid var(--border); border-radius: 12px;
-    padding: 24px 28px;
-    position: relative; overflow: hidden;
-  }
-  .dash-welcome::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, var(--blue), #8b5cf6);
-  }
-  .dash-welcome h2 { font-size: 20px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 6px; }
-  .dash-welcome p  { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+  .hero-top { text-align: center; display: flex; flex-direction: column; gap: 10px; }
+  .hero-top h2 { font-size: 28px; font-weight: 700; letter-spacing: -.03em; color: var(--text); }
+  .hero-top p  { font-size: 14px; color: var(--muted); }
 
-  .dash-stat-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-  }
-  .dash-stat {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-    padding: 16px 18px;
-    transition: border-color .15s;
-  }
-  .dash-stat:hover { border-color: rgba(255,255,255,.13); }
-  .dash-stat .ds-val { font-size: 26px; font-weight: 700; letter-spacing: -.03em; line-height: 1; margin-bottom: 5px; }
-  .dash-stat .ds-lbl { font-size: 11.5px; color: var(--muted); }
-  .ds-blue   .ds-val { color: #5588ee; }
-  .ds-green  .ds-val { color: #10b981; }
-  .ds-purple .ds-val { color: #a78bfa; }
-
-  .dash-charts {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  .dash-chart-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-    padding: 18px 20px;
-  }
-  .dash-chart-card h3 { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-bottom: 14px; }
-
-  .bar-list { display: flex; flex-direction: column; gap: 10px; }
-  .bar-row  { display: flex; flex-direction: column; gap: 4px; }
-  .bar-top  { display: flex; justify-content: space-between; align-items: baseline; }
-  .bar-name { font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 75%; }
-  .bar-num  { font-size: 11px; color: var(--dim); font-weight: 600; }
-  .bar-track { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
-  .bar-fill  { height: 100%; border-radius: 3px; transition: width .7s cubic-bezier(.4,0,.2,1); }
-
-  .quick-searches {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-    padding: 18px 20px;
-  }
-  .quick-searches h3 { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-bottom: 12px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .hero-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 640px; }
   .chip {
-    padding: 6px 14px; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 20px; font-size: 12.5px; color: var(--muted);
-    cursor: pointer; transition: border-color .15s, color .15s, background .15s;
-    font-family: inherit;
+    padding: 7px 16px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; font-size: 12.5px; color: var(--muted); cursor: pointer;
+    font-family: inherit; transition: border-color .15s, color .15s, background .15s;
   }
   .chip:hover { border-color: var(--blue); color: var(--text); background: var(--blue-dim); }
 
-  /* ── Results area ────────────────────────────── */
+  /* ── Results area ──────────────────────────────────────── */
   #results-area {
     flex: 1; overflow: hidden; display: flex; flex-direction: column;
     background: var(--surface); border-radius: 10px; border: 1px solid var(--border);
   }
   #results-area.hidden { display: none; }
-
   #results-header {
     padding: 10px 14px; border-bottom: 1px solid var(--border2);
     display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
@@ -267,29 +193,29 @@
   #results-header h2 { font-size: 10px; font-weight: 700; color: var(--dim); letter-spacing: .1em; text-transform: uppercase; }
   .res-right { display: flex; gap: 8px; align-items: center; }
   #result-count { font-size: 12px; color: var(--muted); }
-
   #export-btn {
     padding: 4px 10px; background: transparent; border: 1px solid var(--border);
     border-radius: 5px; font-size: 11px; cursor: pointer; color: var(--muted);
     display: none; font-family: inherit; transition: border-color .15s, color .15s;
   }
   #export-btn:hover { border-color: rgba(255,255,255,.18); color: var(--text); }
-
   #sql-display {
     padding: 6px 14px; background: var(--surface2); border-bottom: 1px solid var(--border2);
     font-size: 10.5px; font-family: 'SF Mono', Monaco, monospace; color: var(--dim);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     flex-shrink: 0; display: none;
   }
-
   #table-wrap { overflow: auto; flex: 1; }
   #table-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
   #table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,.07); border-radius: 3px; }
-
+  #loading {
+    display: none; font-size: 13px; color: var(--dim);
+    padding: 40px; text-align: center; letter-spacing: .04em;
+  }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   thead { position: sticky; top: 0; background: var(--surface2); z-index: 1; }
   th {
-    padding: 8px 14px; text-align: left; font-weight: 700; font-size: 10px;
+    padding: 9px 14px; text-align: left; font-weight: 700; font-size: 10px;
     color: var(--dim); border-bottom: 1px solid var(--border);
     white-space: nowrap; cursor: pointer; user-select: none;
     letter-spacing: .07em; text-transform: uppercase; transition: color .1s;
@@ -297,53 +223,65 @@
   th:hover { color: var(--muted); }
   th.sort-asc::after  { content: ' ↑'; opacity: .45; }
   th.sort-desc::after { content: ' ↓'; opacity: .45; }
-
   td {
-    padding: 8px 14px; border-bottom: 1px solid var(--border2);
-    vertical-align: top; max-width: 280px; color: var(--text); font-size: 13px;
+    padding: 9px 14px; border-bottom: 1px solid var(--border2);
+    vertical-align: top; max-width: 300px; color: var(--text); font-size: 13px;
   }
   tr:nth-child(even) td { background: rgba(255,255,255,.011); }
   tr:hover td { background: rgba(17,94,210,.055) !important; }
   tr:last-child td { border-bottom: none; }
-
   td.company-name { font-weight: 600; white-space: nowrap; }
-  td.description  { font-size: 12px; color: var(--muted); line-height: 1.55; }
-  td a            { color: #6699ee; text-decoration: none; font-size: 12px; }
+  td.description  { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  td a            { color: #6699ee; text-decoration: none; font-size: 12.5px; }
   td a:hover      { color: #88aaff; text-decoration: underline; }
-
   .tag {
-    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    display: inline-block; padding: 2px 9px; border-radius: 4px;
     font-size: 11px; font-weight: 600; letter-spacing: .02em;
     background: var(--blue-dim); color: #6699ee; border: 1px solid rgba(17,94,210,.2);
   }
 
-  #loading {
-    display: none; font-size: 13px; color: var(--dim);
-    padding: 40px; text-align: center; letter-spacing: .05em;
-  }
-
-  /* ── Chat + Input ────────────────────────────── */
+  /* ── Chat history ──────────────────────────────────────── */
   #chat-history {
     display: flex; flex-direction: column; gap: 3px;
-    max-height: 64px; overflow-y: auto; flex-shrink: 0;
+    max-height: 60px; overflow-y: auto; flex-shrink: 0;
   }
   .chat-bubble { display: flex; gap: 8px; align-items: baseline; font-size: 12px; }
   .chat-bubble .lbl { font-weight: 700; color: var(--dim); white-space: nowrap; font-size: 10px; text-transform: uppercase; letter-spacing: .07em; }
   .chat-bubble .txt { color: var(--muted); line-height: 1.5; }
   .chat-bubble.answer .txt { color: var(--text); }
 
-  #input-area {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-    padding: 8px 10px; display: flex; gap: 8px; align-items: center; flex-shrink: 0;
+  /* ── Input bar ─────────────────────────────────────────── */
+  #input-wrap {
+    flex-shrink: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px 4px 4px 16px;
+    display: flex; align-items: center; gap: 8px;
     transition: border-color .2s, box-shadow .2s;
   }
-  #input-area:focus-within { border-color: rgba(17,94,210,.5); box-shadow: 0 0 0 3px var(--blue-dim); }
-  #query-input { flex: 1; border: none; outline: none; font-size: 14px; background: transparent; color: var(--text); font-family: inherit; }
+  #input-wrap:focus-within {
+    border-color: rgba(17,94,210,.55);
+    box-shadow: 0 0 0 3px var(--blue-dim);
+  }
+  .input-label {
+    font-size: 11px; font-weight: 600; color: var(--dim);
+    letter-spacing: .06em; text-transform: uppercase;
+    white-space: nowrap; user-select: none;
+    padding-right: 8px; border-right: 1px solid var(--border);
+    margin-right: 4px;
+  }
+  #query-input {
+    flex: 1; border: none; outline: none;
+    font-size: 14px; background: transparent; color: var(--text);
+    font-family: inherit; padding: 8px 0;
+  }
   #query-input::placeholder { color: var(--dim); }
   #send-btn {
-    background: var(--blue); color: #fff; border: none; border-radius: 7px;
-    padding: 7px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
-    white-space: nowrap; font-family: inherit; transition: background .15s, box-shadow .15s;
+    background: var(--blue); color: #fff; border: none; border-radius: 8px;
+    padding: 8px 22px; font-size: 13px; font-weight: 600; cursor: pointer;
+    white-space: nowrap; font-family: inherit;
+    transition: background .15s, box-shadow .15s;
   }
   #send-btn:hover { background: var(--blue-h); box-shadow: 0 4px 14px var(--blue-glow); }
   #send-btn:disabled { opacity: .35; cursor: default; box-shadow: none; }
@@ -393,7 +331,7 @@
 
   <div class="body-wrap">
 
-    <!-- Sidebar: Activity feed -->
+    <!-- Sidebar -->
     <div id="sidebar">
       <div class="sidebar-hdr">
         <h2>Team Activity</h2>
@@ -410,41 +348,19 @@
     <!-- Main -->
     <div id="main-content">
 
-      <!-- Dashboard (shown before any search) -->
-      <div id="dashboard">
-        <div class="dash-welcome">
-          <h2 id="dash-greeting">Welcome to Company Search</h2>
-          <p id="dash-sub">Loading your database overview…</p>
+      <!-- Hero (shown before any search) -->
+      <div id="hero">
+        <div class="hero-top">
+          <h2>Company Search</h2>
+          <p id="hero-sub">Search your company database with natural language</p>
         </div>
-
-        <div class="dash-stat-grid" id="dash-stats">
-          <div class="dash-stat"><div class="ds-val">—</div><div class="ds-lbl">Total Companies</div></div>
-          <div class="dash-stat ds-blue"><div class="ds-val">—</div><div class="ds-lbl">Categories</div></div>
-          <div class="dash-stat ds-green"><div class="ds-val">—</div><div class="ds-lbl">Team Searches</div></div>
-          <div class="dash-stat ds-purple"><div class="ds-val">—</div><div class="ds-lbl">Avg Results</div></div>
-        </div>
-
-        <div class="dash-charts">
-          <div class="dash-chart-card">
-            <h3>Top Categories</h3>
-            <div class="bar-list" id="cat-bars"><div style="color:var(--dim);font-size:12px">Loading…</div></div>
-          </div>
-          <div class="dash-chart-card">
-            <h3>Top States</h3>
-            <div class="bar-list" id="state-bars"><div style="color:var(--dim);font-size:12px">Loading…</div></div>
-          </div>
-        </div>
-
-        <div class="quick-searches">
-          <h3>Quick Searches</h3>
-          <div class="chips">
-            <button class="chip" onclick="quickSearch(this)">Aerospace companies in California</button>
-            <button class="chip" onclick="quickSearch(this)">Defense companies with 500+ employees</button>
-            <button class="chip" onclick="quickSearch(this)">Robotics companies founded after 2015</button>
-            <button class="chip" onclick="quickSearch(this)">Companies headquartered in Texas</button>
-            <button class="chip" onclick="quickSearch(this)">AI &amp; Machine Learning companies</button>
-            <button class="chip" onclick="quickSearch(this)">Startups with under 50 employees</button>
-          </div>
+        <div class="hero-chips">
+          <button class="chip" onclick="quickSearch(this)">Aerospace companies in California</button>
+          <button class="chip" onclick="quickSearch(this)">Defense companies with 500+ employees</button>
+          <button class="chip" onclick="quickSearch(this)">Robotics companies founded after 2015</button>
+          <button class="chip" onclick="quickSearch(this)">Companies headquartered in Texas</button>
+          <button class="chip" onclick="quickSearch(this)">AI &amp; Machine Learning companies</button>
+          <button class="chip" onclick="quickSearch(this)">Startups with under 50 employees</button>
         </div>
       </div>
 
@@ -469,7 +385,9 @@
 
       <div id="chat-history"></div>
 
-      <div id="input-area">
+      <!-- Input bar -->
+      <div id="input-wrap">
+        <span class="input-label">Company Search</span>
         <input id="query-input" type="text"
           placeholder='Ask anything — "Robotics companies in CA with 100+ employees"'
           autocomplete="off">
@@ -481,22 +399,45 @@
 </div>
 
 <script>
+  // Column priority order and header name overrides
+  const PRIORITY = ['company','category','city','state','country','employees',
+                    'website','linkedin','description','year__nfounded','year__founded','notes'];
+
+  const HDR_MAP = {
+    'year__nfounded': 'Year Founded',
+    'year__founded':  'Year Founded',
+    'outside_usa':    'Outside USA',
+    'aka_dba':        'AKA / DBA',
+    'crunchbase':     'Crunchbase',
+    'scrape_status':  'Status',
+    'needs_review':   'Needs Review',
+    'name_variants':  'Name Variants',
+    'acquired_by':    'Acquired By',
+    'source_sheets':  'Source Sheets',
+    'original_categories': 'Original Categories',
+    'city_clean':     'City (Clean)',
+    'state_clean':    'State (Clean)',
+  };
+
   const COLORS = ['#115ed2','#8b5cf6','#10b981','#f59e0b','#f43f5e','#14b8a6','#f97316'];
-  const PRIORITY = ['company','category','city','state','country','employees','website','linkedin','description','notes'];
 
-  let searchHistory = [], currentRows = [], currentColumns = [];
+  // State
+  let searchHistory = [];
+  let currentRows = [];
+  let originalColumns = [];  // server order — used to look up row values
+  let currentColumns = [];   // display order
   let sortCol = -1, sortAsc = true;
-  let pollTimer = null, searchCount = 0;
+  let pollTimer = null;
+  let hasSearched = false;
 
-  // ── Auth ───────────────────────────────────────
+  // ── Auth ──────────────────────────────────────────────
   async function checkAuth() {
     try {
       const res = await fetch('/api/history');
       if (res.status === 401) { showLogin(); return; }
-      const data = await res.json();
+      renderHistory(await res.json());
       showApp();
-      renderHistory(data);
-      initDashboard();
+      loadStats();
       startPolling();
     } catch { showLogin(); }
   }
@@ -513,7 +454,7 @@
         body: JSON.stringify({ password: pw })
       });
       if (res.ok) {
-        showApp(); initDashboard(); loadHistory(); startPolling();
+        showApp(); loadStats(); loadHistory(); startPolling();
       } else {
         document.getElementById('login-error').textContent = 'Incorrect password — try again.';
         document.getElementById('password-input').value = '';
@@ -533,62 +474,23 @@
     document.getElementById('app').classList.add('hidden');
     setTimeout(() => document.getElementById('password-input').focus(), 60);
   }
+
   function showApp() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('app').classList.remove('hidden');
+    document.getElementById('query-input').focus();
   }
 
-  // ── Dashboard ──────────────────────────────────
-  async function initDashboard() {
-    const hour = new Date().getHours();
-    const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-    document.getElementById('dash-greeting').textContent = greet + ' — Company Search';
-
-    const [statsRes, analyticsRes] = await Promise.all([
-      fetch('/api/stats'),
-      fetch('/api/analytics')
-    ]);
-    const stats = await statsRes.json();
-    const a = analyticsRes.ok ? await analyticsRes.json() : null;
-
-    document.getElementById('stats').textContent = stats.total.toLocaleString() + ' companies';
-    document.getElementById('dash-sub').textContent =
-      `${stats.total.toLocaleString()} companies across ${a ? a.top_categories.length : '—'} categories · Ready to search`;
-
-    if (a) {
-      const cards = document.getElementById('dash-stats').querySelectorAll('.dash-stat');
-      cards[0].querySelector('.ds-val').textContent = stats.total.toLocaleString();
-      cards[1].querySelector('.ds-val').textContent = a.top_categories.length;
-      cards[2].querySelector('.ds-val').textContent = a.session_searches;
-      cards[3].querySelector('.ds-val').textContent = a.avg_results.toLocaleString();
-
-      renderBars('cat-bars',   a.top_categories, 0);
-      renderBars('state-bars', a.top_states,     2);
-    }
+  // ── Stats ─────────────────────────────────────────────
+  async function loadStats() {
+    const res = await fetch('/api/stats');
+    const d = await res.json();
+    document.getElementById('stats').textContent = d.total.toLocaleString() + ' companies';
+    document.getElementById('hero-sub').textContent =
+      `Search ${d.total.toLocaleString()} companies with natural language`;
   }
 
-  function renderBars(id, items, colorOffset) {
-    const el = document.getElementById(id);
-    if (!items.length) { el.innerHTML = '<div style="color:var(--dim);font-size:12px">No data</div>'; return; }
-    const max = items[0].count;
-    el.innerHTML = items.map((item, i) => `
-      <div class="bar-row">
-        <div class="bar-top">
-          <span class="bar-name">${esc(item.name)}</span>
-          <span class="bar-num">${item.count.toLocaleString()}</span>
-        </div>
-        <div class="bar-track">
-          <div class="bar-fill" style="width:${Math.round(item.count/max*100)}%;background:${COLORS[(i+colorOffset)%COLORS.length]}"></div>
-        </div>
-      </div>`).join('');
-  }
-
-  function quickSearch(btn) {
-    document.getElementById('query-input').value = btn.textContent.trim();
-    sendQuery();
-  }
-
-  // ── History ────────────────────────────────────
+  // ── History ───────────────────────────────────────────
   async function loadHistory() {
     const res = await fetch('/api/history');
     if (res.ok) renderHistory(await res.json());
@@ -630,6 +532,11 @@
     sendQuery();
   }
 
+  function quickSearch(btn) {
+    document.getElementById('query-input').value = btn.textContent.trim();
+    sendQuery();
+  }
+
   function fmtTime(ts) {
     if (!ts) return '';
     const t = ts.replace(' UTC','').split(' ')[1];
@@ -639,16 +546,18 @@
     return `${hr%12||12}:${m} ${hr>=12?'PM':'AM'}`;
   }
 
-  // ── Search ─────────────────────────────────────
+  // ── Search ────────────────────────────────────────────
   function orderCols(cols) {
     const low = cols.map(c => c.toLowerCase());
-    const pri = PRIORITY.filter(c => low.includes(c)).map(c => cols[low.indexOf(c)]);
+    const pri  = PRIORITY.filter(c => low.includes(c)).map(c => cols[low.indexOf(c)]);
     const rest = cols.filter(c => !PRIORITY.includes(c.toLowerCase()));
     return [...pri, ...rest];
   }
 
   function fmtHdr(col) {
-    return col.replace(/_+/g,' ').replace(/\b\w/g, l => l.toUpperCase());
+    const key = col.toLowerCase();
+    if (HDR_MAP[key]) return HDR_MAP[key];
+    return col.replace(/_+/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).trim();
   }
 
   async function sendQuery() {
@@ -659,8 +568,8 @@
     const btn = document.getElementById('send-btn');
     btn.disabled = true; input.disabled = true;
 
-    // Switch from dashboard to results view
-    document.getElementById('dashboard').classList.add('hidden');
+    // Switch from hero to results
+    document.getElementById('hero').classList.add('hidden');
     document.getElementById('results-area').classList.remove('hidden');
     document.getElementById('results-table').style.display = 'none';
     document.getElementById('loading').style.display = 'block';
@@ -680,14 +589,25 @@
 
       if (!res.ok) {
         addBubble('Error', '⚠ ' + (data.detail || 'Something went wrong'), true);
+        if (!hasSearched) {
+          document.getElementById('hero').classList.remove('hidden');
+          document.getElementById('results-area').classList.add('hidden');
+        }
       } else {
+        hasSearched = true;
         searchHistory.push({ query, sql: data.sql });
-        currentRows = data.rows;
-        currentColumns = orderCols(data.columns);
+
+        // KEY FIX: store original column order from server separately
+        originalColumns  = data.columns;
+        currentColumns   = orderCols(data.columns);
+        currentRows      = data.rows;
         sortCol = -1;
+
         renderTable(currentColumns, currentRows);
-        addBubble('Result', data.count === 0 ? 'No companies matched.' :
+        addBubble('Result',
+          data.count === 0 ? 'No companies matched.' :
           `Found ${data.count.toLocaleString()} ${data.count===1?'company':'companies'}`, true);
+
         document.getElementById('sql-display').textContent = data.sql;
         document.getElementById('sql-display').style.display = 'block';
         document.getElementById('export-btn').style.display = data.count > 0 ? 'block' : 'none';
@@ -707,6 +627,7 @@
     const tbl  = document.getElementById('results-table');
     head.innerHTML = ''; body.innerHTML = '';
 
+    // Build header
     const tr = document.createElement('tr');
     cols.forEach((col, i) => {
       const th = document.createElement('th');
@@ -716,25 +637,38 @@
     });
     head.appendChild(tr);
 
+    // Build rows — IMPORTANT: use originalColumns index for value lookup
     rows.forEach(row => {
       const tr = document.createElement('tr');
-      cols.forEach((col, i) => {
-        const cl = col.toLowerCase(), val = row[i] ?? '';
-        const td = document.createElement('td');
+      cols.forEach(col => {
+        const origIdx = originalColumns.indexOf(col);   // correct value index
+        const val = row[origIdx] ?? '';
+        const cl  = col.toLowerCase();
+        const td  = document.createElement('td');
+
         if (cl === 'company') {
-          td.className = 'company-name'; td.textContent = val;
+          td.className = 'company-name';
+          td.textContent = val;
         } else if (cl === 'description') {
-          td.className = 'description'; td.textContent = val;
+          td.className = 'description';
+          td.textContent = val;
         } else if (cl === 'website' && val) {
           const a = document.createElement('a');
-          a.href = val.startsWith('http') ? val : 'https://'+val;
+          a.href = val.startsWith('http') ? val : 'https://' + val;
           a.target = '_blank'; a.rel = 'noopener';
-          a.textContent = val.replace(/^https?:\/\//,'').replace(/\/$/,'');
+          a.textContent = 'Website ↗';
           td.appendChild(a);
         } else if (cl === 'linkedin' && val) {
           const a = document.createElement('a');
-          a.href = val.startsWith('http') ? val : 'https://'+val;
-          a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'LinkedIn ↗';
+          a.href = val.startsWith('http') ? val : 'https://' + val;
+          a.target = '_blank'; a.rel = 'noopener';
+          a.textContent = 'LinkedIn ↗';
+          td.appendChild(a);
+        } else if (cl === 'crunchbase' && val) {
+          const a = document.createElement('a');
+          a.href = val.startsWith('http') ? val : 'https://' + val;
+          a.target = '_blank'; a.rel = 'noopener';
+          a.textContent = 'Crunchbase ↗';
           td.appendChild(a);
         } else if (cl === 'category' && val) {
           const s = document.createElement('span');
@@ -747,7 +681,8 @@
       body.appendChild(tr);
     });
 
-    document.querySelectorAll('th').forEach((th,i) => {
+    // Update sort indicators
+    document.querySelectorAll('th').forEach((th, i) => {
       th.classList.remove('sort-asc','sort-desc');
       if (i === sortCol) th.classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
     });
@@ -760,7 +695,8 @@
   function doSort(ci) {
     if (sortCol === ci) sortAsc = !sortAsc; else { sortCol = ci; sortAsc = true; }
     const sorted = [...currentRows].sort((a, b) => {
-      const av = a[ci] ?? '', bv = b[ci] ?? '';
+      const origIdx = originalColumns.indexOf(currentColumns[ci]);
+      const av = a[origIdx] ?? '', bv = b[origIdx] ?? '';
       const an = parseFloat(av), bn = parseFloat(bv);
       if (!isNaN(an) && !isNaN(bn)) return sortAsc ? an-bn : bn-an;
       return sortAsc ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
@@ -780,8 +716,9 @@
     if (!currentRows.length) return;
     const lines = [currentColumns.join(',')];
     currentRows.forEach(row => {
-      lines.push(currentColumns.map((_,i) => {
-        const v = String(row[i]??'').replace(/"/g,'""');
+      lines.push(currentColumns.map(col => {
+        const origIdx = originalColumns.indexOf(col);
+        const v = String(row[origIdx] ?? '').replace(/"/g, '""');
         return v.includes(',') || v.includes('\n') ? `"${v}"` : v;
       }).join(','));
     });
