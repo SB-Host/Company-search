@@ -154,13 +154,18 @@ class QueryRequest(BaseModel):
     history: list = []
 
 @app.post("/api/login")
-async def login(req: LoginRequest, response: Response):
+async def login(req: LoginRequest, request: Request, response: Response):
     expected = os.environ.get("APP_PASSWORD", "changeme")
     if not hmac.compare_digest(req.password, expected):
         raise HTTPException(status_code=401, detail="Invalid password")
     response.set_cookie(
-        "uv_session", _session_token(),
-        httponly=True, samesite="lax", max_age=86400 * 30
+        key="uv_session",
+        value=_session_token(),
+        httponly=True,
+        samesite="lax",
+        max_age=86400 * 30,
+        path="/",
+        secure=request.url.scheme == "https",
     )
     return {"ok": True}
 
