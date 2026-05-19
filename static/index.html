@@ -1139,7 +1139,7 @@
   function sortTable(ci) {
     if (sortCol===ci) sortAsc=!sortAsc; else { sortCol=ci; sortAsc=true; }
     const sorted = [...currentRows].sort((a,b) => {
-      const av=a[ci]??\'\', bv=b[ci]??\'\'
+      const av = a[ci] ?? '', bv = b[ci] ?? '';
       const an=parseFloat(av), bn=parseFloat(bv);
       if (!isNaN(an)&&!isNaN(bn)) return sortAsc?an-bn:bn-an;
       return sortAsc?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
