@@ -1,15 +1,18 @@
 import hashlib
 import hmac
+import io
 import os
 import re
 import sqlite3
+import subprocess
+import sys
 import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
 import anthropic
 import pandas as pd
-from fastapi import Depends, FastAPI, HTTPException, Request, Response
+from fastapi import Depends, FastAPI, File, HTTPException, Request, Response, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -235,6 +238,107 @@ async def reload_db(_: None = Depends(require_auth)):
     db_columns = load_db()
     schema_cols, total_count = get_schema()
     return {"total": total_count}
+
+
+# ── Upload & background scraper ─────────────────────────────────────────────────
+
+_upload_job = {"status": "idle", "processed": 0, "total": 0, "message": ""}
+_upload_lock = threading.Lock()
+_scraper_proc = None
+
+COMPANY_COL_ALIASES = ["company", "name", "company_name", "account name", "organization"]
+
+def _detect_company_col(df: pd.DataFrame):
+    for col in df.columns:
+        if col.strip().lower() in COMPANY_COL_ALIASES:
+            return col
+    return None
+
+def _run_scraper_thread(added: int):
+    global _scraper_proc
+    with _upload_lock:
+        _upload_job.update({"status": "running", "processed": 0, "total": added, "message": "Starting..."})
+    try:
+        env = os.environ.copy()
+        _scraper_proc = subprocess.Popen(
+            [sys.executable, "fill_locations.py"],
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            text=True, env=env
+        )
+        processed = 0
+        for line in _scraper_proc.stdout:
+            line = line.strip()
+            if line and line.startswith("["):
+                try:
+                    processed = int(line.split("/")[0].replace("[", "").strip())
+                except Exception:
+                    pass
+                with _upload_lock:
+                    _upload_job.update({"processed": processed, "message": line[:120]})
+        _scraper_proc.wait()
+        with _upload_lock:
+            _upload_job.update({"status": "done", "processed": processed, "message": "Scraping complete"})
+        # Reload the DB so search reflects new companies
+        load_db()
+    except Exception as e:
+        with _upload_lock:
+            _upload_job.update({"status": "error", "message": str(e)})
+
+
+@app.post("/api/upload")
+async def upload_companies(file: UploadFile = File(...)):
+    content = await file.read()
+
+    # Parse CSV or Excel
+    try:
+        if file.filename.endswith((".xlsx", ".xls")):
+            new_df = pd.read_excel(io.BytesIO(content), dtype=str).fillna("")
+        else:
+            new_df = pd.read_csv(io.BytesIO(content), dtype=str).fillna("")
+    except Exception as e:
+        raise HTTPException(400, f"Could not read file: {e}")
+
+    # Find company name column
+    col = _detect_company_col(new_df)
+    if not col:
+        raise HTTPException(400, f"No company name column found. Columns: {list(new_df.columns)}")
+
+    if col != "Company":
+        new_df = new_df.rename(columns={col: "Company"})
+
+    # Load existing and deduplicate
+    existing_df = pd.read_csv(CSV_PATH, dtype=str).fillna("")
+    existing_names = set(existing_df["Company"].str.strip().str.lower())
+    before = len(new_df)
+    new_df = new_df[~new_df["Company"].str.strip().str.lower().isin(existing_names)].copy()
+    duplicates = before - len(new_df)
+
+    if new_df.empty:
+        return {"added": 0, "duplicates": duplicates, "message": "All companies already in database"}
+
+    # Append to CSV
+    combined = pd.concat([existing_df, new_df], ignore_index=True)
+    combined.to_csv(CSV_PATH, index=False)
+
+    added = len(new_df)
+
+    # Start scraper in background thread
+    t = threading.Thread(target=_run_scraper_thread, args=(added,), daemon=True)
+    t.start()
+
+    return {"added": added, "duplicates": duplicates, "message": f"Added {added} companies, scraping started"}
+
+
+@app.get("/api/upload-status")
+async def upload_status():
+    with _upload_lock:
+        return dict(_upload_job)
+
+
+@app.get("/upload", response_class=HTMLResponse)
+async def upload_page():
+    return Path("static/upload.html").read_text()
+
 
 @app.get("/", response_class=HTMLResponse)
 async def root():

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Companies</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 80px auto; padding: 0 20px; background: #f5f5f5; }
+    h2 { margin-bottom: 6px; }
+    p { color: #666; margin-bottom: 24px; }
+    #drop-zone {
+      border: 3px dashed #aaa;
+      border-radius: 12px;
+      padding: 60px 20px;
+      text-align: center;
+      font-size: 18px;
+      color: #888;
+      cursor: pointer;
+      background: white;
+      transition: all 0.2s;
+    }
+    #drop-zone.drag-over { border-color: #4f46e5; color: #4f46e5; background: #eef2ff; }
+    #drop-zone.done { border-color: #16a34a; color: #16a34a; background: #f0fdf4; }
+    #drop-zone.error { border-color: #dc2626; color: #dc2626; background: #fef2f2; }
+    #status { margin-top: 24px; padding: 16px; border-radius: 8px; background: white; display: none; font-size: 15px; line-height: 1.6; }
+    #progress-bar-wrap { background: #e5e7eb; border-radius: 99px; height: 10px; margin-top: 12px; display: none; }
+    #progress-bar { background: #4f46e5; height: 10px; border-radius: 99px; width: 0%; transition: width 0.5s; }
+    input[type=file] { display: none; }
+    a.back { display: inline-block; margin-top: 24px; color: #4f46e5; text-decoration: none; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h2>Add Companies</h2>
+  <p>Drop a CSV or Excel file. New companies will be added and scraped automatically.</p>
+
+  <div id="drop-zone">
+    Drop CSV or Excel here<br>
+    <span style="font-size:13px; margin-top:8px; display:block;">or click to browse</span>
+  </div>
+  <input type="file" id="file-input" accept=".csv,.xlsx,.xls">
+
+  <div id="status"></div>
+  <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+  <a class="back" href="/">← Back to search</a>
+
+  <script>
+    const zone     = document.getElementById('drop-zone');
+    const input    = document.getElementById('file-input');
+    const status   = document.getElementById('status');
+    const barWrap  = document.getElementById('progress-bar-wrap');
+    const bar      = document.getElementById('progress-bar');
+    let polling    = null;
+
+    zone.addEventListener('click', () => input.click());
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
+    input.addEventListener('change', () => handleFile(input.files[0]));
+
+    function showStatus(msg, color) {
+      status.style.display = 'block';
+      status.style.borderLeft = `4px solid ${color}`;
+      status.innerHTML = msg;
+    }
+
+    function handleFile(file) {
+      if (!file) return;
+      zone.textContent = `Uploading ${file.name}...`;
+      zone.className = '';
+
+      const form = new FormData();
+      form.append('file', file);
+
+      fetch('/api/upload', { method: 'POST', body: form })
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) {
+            zone.className = 'error';
+            zone.textContent = '⚠ Upload failed';
+            showStatus(data.error, '#dc2626');
+            return;
+          }
+          zone.className = 'done';
+          zone.textContent = '✓ File received';
+          showStatus(`<b>${data.added} new companies added.</b> Scraping started in background.<br>
+            Duplicates skipped: ${data.duplicates}`, '#16a34a');
+          if (data.added > 0) {
+            barWrap.style.display = 'block';
+            startPolling();
+          }
+        })
+        .catch(err => {
+          zone.className = 'error';
+          zone.textContent = '⚠ Upload failed';
+          showStatus(err.toString(), '#dc2626');
+        });
+    }
+
+    function startPolling() {
+      if (polling) clearInterval(polling);
+      polling = setInterval(() => {
+        fetch('/api/upload-status')
+          .then(r => r.json())
+          .then(d => {
+            const pct = d.total > 0 ? Math.round((d.processed / d.total) * 100) : 0;
+            bar.style.width = pct + '%';
+            showStatus(
+              `<b>Scraping in background...</b><br>
+               Processed: ${d.processed} / ${d.total}<br>
+               Status: ${d.message || d.status}`, '#4f46e5');
+
+            if (d.status === 'done' || d.status === 'idle') {
+              clearInterval(polling);
+              showStatus(`<b>Done!</b> ${d.processed} companies scraped and added to database.`, '#16a34a');
+              bar.style.width = '100%';
+            }
+          });
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
